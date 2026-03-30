@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Nét thường (Regular) cho nội dung bài viết, chữ phụ -->
+    <font
+        app:fontStyle="normal"
+        app:fontWeight="400"
+        app:font="@font/inter_regular" />
+
+    <!-- Nét đậm (Bold) cho Tiêu đề tin tức -->
+    <font
+        app:fontStyle="normal"
+        app:fontWeight="700"
+        app:font="@font/inter_bold" />
+</font-family>

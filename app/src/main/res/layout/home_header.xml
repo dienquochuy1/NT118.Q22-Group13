@@ -1,0 +1,114 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@color/background_dark"
+    android:id="@+id/fragment_home">
+
+    <!--  Tiêu đề TechByte -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TechByte."
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--  Ngày tháng -->
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CN, 29 Tháng 3, 2026"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+
+
+    <!--  Nút Search  -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/btn_search"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:padding="4dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/CircleImage"
+        app:strokeColor="@color/circle_border"
+        app:strokeWidth="1dp" />
+
+    <!-- 5. Hàng nút lọc (Filter Chips) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:scrollbars="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tv_date">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginEnd="8dp">
+
+            <!-- Nút Tin tức (Đang chọn - Màu xanh) -->
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tin tức"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                app:backgroundTint="#27AE60"
+                app:cornerRadius="20dp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Nút Dành cho bạn -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dành cho bạn"
+                android:textAllCaps="false"
+                android:textColor="#808080"
+                app:strokeColor="#333333"
+                app:cornerRadius="20dp"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Nút Sản phẩm -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sản phẩm"
+                android:textAllCaps="false"
+                android:textColor="#808080"
+                app:strokeColor="#333333"
+                app:cornerRadius="20dp" />
+
+            <!-- Đánh giá -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Đánh giá"
+                android:textColor="#808080"
+                android:textAllCaps="false"
+                app:strokeColor="#333333"
+                app:cornerRadius="20dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

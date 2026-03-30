@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="circle_border">#4B4A4A</color>
+
+    <!-- Hacker / Night Owl Palette -->
+    <color name="primary_accent">#00E676</color>     <!-- Xanh lá Neon - Màu nhấn cho Nút, Icon chọn -->
+    <color name="background_dark">#121212</color>    <!-- Nền tổng thể của App -->
+    <color name="surface_dark">#1E1E1E</color>       <!-- Nền của Thẻ bài viết (CardView), Bottom Nav -->
+    <color name="text_primary">#E1E1E6</color>       <!-- Màu Tiêu đề, chữ nội dung chính -->
+    <color name="text_secondary">#A1A1AA</color>     <!-- Màu chữ phụ: Tên tác giả, ngày tháng, tóm tắt -->
+    <color name="divider_color">#2C2C2E</color>      <!-- Đường viền mờ hoặc vạch ngăn cách -->
+</resources>
