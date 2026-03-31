@@ -3,15 +3,28 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_home_user"
+    android:id="@+id/layout_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark"
-    tools:context=".Home_UserFragment">
+    tools:context=".Login">
 
     <!-- ========================================== -->
     <!-- 1. PHẦN TITLE (Nằm trên cùng)              -->
     <!-- ========================================== -->
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:src="@drawable/arrow_right"
+        app:layout_constraintEnd_toStartOf="@+id/user_title"
+        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/user_title"
         android:layout_width="wrap_content"
@@ -25,15 +38,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+<!--    <View-->
+<!--        android:id="@+id/devider"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:background="@color/circle_border"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/user_title" />-->
+    <include
+        layout="@layout/view_devider"
         android:id="@+id/devider"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@color/circle_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_title" />
+        app:layout_constraintTop_toBottomOf="@+id/user_title"/>
 
 
     <!-- ========================================== -->
@@ -209,10 +231,13 @@
 
     </ScrollView>
 
-    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

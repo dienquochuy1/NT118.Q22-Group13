@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Home_UserFragment#newInstance} factory method to
+ * Use the {@link Login#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Home_UserFragment extends Fragment {
+public class Login extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +24,7 @@ public class Home_UserFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public Home_UserFragment() {
+    public Login() {
         // Required empty public constructor
     }
 
@@ -37,8 +37,8 @@ public class Home_UserFragment extends Fragment {
      * @return A new instance of fragment Home_UserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Home_UserFragment newInstance(String param1, String param2) {
-        Home_UserFragment fragment = new Home_UserFragment();
+    public static Login newInstance(String param1, String param2) {
+        Login fragment = new Login();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,6 +59,20 @@ public class Home_UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_user, container, false);
+        View view = inflater.inflate(R.layout.login, container, false);
+
+        // Tìm nút mũi tên Back
+        View btnBack = view.findViewById(R.id.btn_back);
+
+        // Bắt sự kiện click
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Hủy Fragment hiện tại và lùi lại 1 bước trong lịch sử (Về lại Home_user)
+                getParentFragmentManager().popBackStack();
+            }
+        });
+
+        return view;
     }
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu xanh neon khi tab đang được chọn (active) -->
+    <item android:color="@color/primary_accent" android:state_checked="true" />
+
+    <!-- Màu xám khi tab không được chọn (inactive) -->
+    <item android:color="@color/circle_border" />
+</selector>

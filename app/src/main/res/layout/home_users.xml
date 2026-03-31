@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <TextView
+        android:id="@+id/user_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/inter_bold"
+        android:text="Tài khoản"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        layout="@layout/view_devider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_title"/>
+
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/user_scroll_container"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/devider">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/icon_user"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="32dp"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/user"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            app:strokeColor="@color/circle_border"
+            app:strokeWidth="3dp" />
+
+        <TextView
+            android:id="@+id/tv_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Khách"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_user" />
+
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Đăng nhập để bình luận, lưu bài viết và\nquản lý sở thích cá nhân của bạn."
+            android:textColor="#A0A0A0"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_role" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_login"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp"
+            android:text="Đăng nhập"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/primary_accent"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toStartOf="@+id/btn_register"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_subtitle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_register"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:text="Đăng ký"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="#1E1E1E"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_login"
+            app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
+            app:strokeColor="@color/circle_border"
+            app:strokeWidth="1dp" />
+
+        <include
+            layout="@layout/view_devider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="35dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_login"/>
+
+        <LinearLayout
+            android:id="@+id/menu_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/devider">
+
+            <!-- Mục 1: Lịch sử đọc -->
+            <TextView
+                android:id="@+id/menu_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/history"
+                android:drawableEnd="@drawable/password"
+                android:drawablePadding="16dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="18dp"
+                android:text="Lịch sử đọc"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_bold"
+                app:drawableTint="@color/circle_border" />
+
+            <include
+                layout="@layout/view_devider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/menu_history"/>
+
+            <!-- Mục 2: Giao diện (Tối) -->
+            <TextView
+                android:id="@+id/menu_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/theme"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawablePadding="16dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="18dp"
+                android:text="Giao diện (Tối)"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_bold"
+                app:drawableTint="@color/circle_border" />
+
+            <!-- Mục 3: Trợ giúp & Phản hồi -->
+            <TextView
+                android:id="@+id/menu_help"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/contact_support"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawablePadding="16dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="18dp"
+                android:text="Trợ giúp và Phản hồi"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_bold"
+                app:drawableTint="@color/circle_border" />
+
+            <TextView
+                android:id="@+id/menu_policy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/docs"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawablePadding="16dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="18dp"
+                android:text="Điều khoản sử dụng"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:fontFamily="@font/inter_bold"
+                app:drawableTint="@color/circle_border" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

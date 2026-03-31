@@ -3,11 +3,15 @@
 
     <item android:title="Trang chủ"
         android:icon="@drawable/home"
-        android:id="bottom_nav_home"/>
+        android:id="@+id/bottom_nav_home"/>
+
+    <!-- Vô hiệu hóa nút Đã lưu -->
     <item android:title="Đã lưu"
         android:icon="@drawable/bookmark"
-        android:id="bottom_nav_bookmark"/>
+        android:id="@+id/bottom_nav_bookmark"
+        android:enabled="false" />
+
     <item android:title="Cá nhân"
         android:icon="@drawable/user"
-        android:id="bottom_nav_user"/>
+        android:id="@+id/bottom_nav_user"/>
 </menu>
