@@ -12,10 +12,9 @@
         android:background="@color/background_dark"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
-        app:itemRippleColor="@color/primary_accent"
-        app:itemActiveIndicatorStyle="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
+        app:menu="@menu/bottom_nav_menu"
+        app:itemActiveIndicatorStyle="@android:color/transparent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

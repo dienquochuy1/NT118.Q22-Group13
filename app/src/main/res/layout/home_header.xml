@@ -73,18 +73,19 @@
                 android:layout_marginEnd="8dp"/>
 
             <!-- Nút Dành cho bạn -->
+
+            <!-- Nút Sản phẩm -->
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Dành cho bạn"
                 android:textAllCaps="false"
                 android:textColor="#808080"
-                app:strokeColor="#333333"
                 app:cornerRadius="20dp"
-                android:layout_marginEnd="8dp"/>
+                app:strokeColor="#333333" />
 
-            <!-- Nút Sản phẩm -->
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"

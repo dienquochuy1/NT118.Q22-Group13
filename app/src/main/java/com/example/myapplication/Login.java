@@ -73,6 +73,17 @@ public class Login extends Fragment {
             }
         });
 
+        View register_now = view.findViewById(R.id.tv_register_now);
+        register_now.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new Register()) // Thay thế bằng Fragment Register
+                        .addToBackStack(null) // LỆNH QUAN TRỌNG: Lưu trang này vào lịch sử để lùi lại được
+                        .commit();
+            }
+        });
+
         return view;
     }
 }
