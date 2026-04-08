@@ -121,6 +121,19 @@
             app:strokeColor="@color/circle_border"
             app:strokeWidth="1dp" />
 
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="409dp"
+            android:layout_height="55dp"
+            android:visibility="gone"
+            android:backgroundTint="#EF0C0C"
+            android:text="Đăng xuất"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/menu_container"
+            app:layout_constraintVertical_bias="0.448" />
+
         <include
             layout="@layout/view_devider"
             android:layout_width="0dp"

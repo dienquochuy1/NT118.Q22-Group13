@@ -33,21 +33,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Xử lý sự kiện click trên Bottom Navigation
-        activityMainBinding.layoutBottomNav.homeBottomNavigation.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
+        com.google.android.material.bottomnavigation.BottomNavigationView navView = findViewById(R.id.home_bottom_navigation);
+        if(navView != null){
+            activityMainBinding.layoutBottomNav.homeBottomNavigation.setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
 
-            if (id == R.id.bottom_nav_home) {
-                // Hiện lại giao diện Trang chủ
-                showHomeUI();
-                return true;
-            } else if (id == R.id.bottom_nav_user) {
-                // Chuyển sang giao diện Cá nhân (Đăng nhập)
-                showUserUI();
-                return true;
-            }
-            return false;
-        });
-
+                if (id == R.id.bottom_nav_home) {
+                    // Hiện lại giao diện Trang chủ
+                    showHomeUI();
+                    return true;
+                } else if (id == R.id.bottom_nav_user) {
+                    // Chuyển sang giao diện Cá nhân (Đăng nhập)
+                    showUserUI();
+                    return true;
+                }
+                return false;
+            });
+        }
         // Mặc định luôn ở Trang chủ khi khởi động
         activityMainBinding.layoutBottomNav.homeBottomNavigation.setSelectedItemId(R.id.bottom_nav_home);
         showHomeUI();

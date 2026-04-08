@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/success_noti"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    tools:context=".Successful_Nofitication">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_success_tick"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="145dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="145dp"
+        android:scaleType="fitCenter"
+        android:tint="@color/primary_accent"
+        app:contentPadding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.517"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/successful_not"
+        app:shapeAppearanceOverlay="@style/CircleImage"
+        app:strokeColor="@color/primary_accent"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/success_text"
+        android:layout_width="289dp"
+        android:layout_height="109dp"
+        android:layout_marginTop="28dp"
+        android:text="Đăng nhập thành công!"
+        android:textAlignment="center"
+        android:textColor="@color/text_primary"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_success_tick" />
+
+    <TextView
+        android:id="@+id/success_des"
+        android:layout_width="289dp"
+        android:layout_height="109dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/inter_bold"
+        android:text="Chào mừng bạn đến với TechByte. Chuẩn bị trải nghiệm thế giới công nghệ được cá nhân hóa dành riêng cho bạn."
+        android:textAlignment="center"
+        android:textColor="@color/text_secondary"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success_text" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/info_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:background="@color/surface_dark"
+        app:strokeWidth="1dp"
+        app:strokeColor="#333333"
+        app:cardBackgroundColor="@color/background_dark"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/success_des">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/icon_thunder"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/thunder"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:contentPadding="10dp"
+                app:strokeColor="#333333"
+                app:strokeWidth="2dp"
+                android:scaleType="fitCenter"
+                android:tint="#eab308"/>
+
+            <TextView
+                android:id="@+id/func_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="Cập nhật tin tức nhanh nhất"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/func_des"
+                app:layout_constraintStart_toEndOf="@+id/icon_thunder"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/func_des"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter_regular"
+                android:text="Từ các nguồn uy tín toàn cầu"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/icon_thunder"
+                app:layout_constraintTop_toBottomOf="@id/func_title" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:text="Tiếp tục"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        app:backgroundTint="#00FF85"
+        app:cornerRadius="30dp"
+        app:icon="@drawable/arrow_right"
+        app:iconGravity="end"
+        app:iconPadding="8dp"
+        app:iconTint="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

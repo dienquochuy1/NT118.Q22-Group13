@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173996833157",
+    "project_id": "techbyte-845c1",
+    "storage_bucket": "techbyte-845c1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173996833157:android:dfd130fb16832f7bbb6cec",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEWek4YB2UTxMUStZ54naDQoxF5jlchCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

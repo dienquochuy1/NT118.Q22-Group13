@@ -260,7 +260,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:fontFamily="@font/inter_bold"
-                    android:text="HOẶC ĐĂNG KÝ VỚI"
+                    android:text="HOẶC ĐĂNG NHẬP VỚI"
                     android:textColor="#A0A0A0"
                     android:textSize="12sp" />
 

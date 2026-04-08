@@ -1,58 +1,37 @@
 package com.example.myapplication;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Login#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.myapplication.Entity.User;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.mindrot.jbcrypt.BCrypt;
+
+
 public class Login extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private EditText etEmail, etPassword;
+    private Button btnLogin;
+    private FirebaseFirestore db;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView register;
 
     public Login() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Home_UserFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Login newInstance(String param1, String param2) {
-        Login fragment = new Login();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -61,10 +40,23 @@ public class Login extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.login, container, false);
 
-        // Tìm nút mũi tên Back
+//        Ánh xạ id
+        db = FirebaseFirestore.getInstance();
+        etEmail = view.findViewById(R.id.et_email);
+        etPassword = view.findViewById(R.id.et_password);
+        btnLogin = view.findViewById(R.id.btn_login);
+        register = view.findViewById(R.id.tv_register_now);
         View btnBack = view.findViewById(R.id.btn_back);
 
-        // Bắt sự kiện click
+        btnLogin.setOnClickListener(v -> loginUser());
+
+        register.setOnClickListener(v -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new Register()) // Thay thế bằng Fragment Register
+                    .addToBackStack(null) // LỆNH QUAN TRỌNG: Lưu trang này vào lịch sử để lùi lại được
+                    .commit();
+        });
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,4 +78,64 @@ public class Login extends Fragment {
 
         return view;
     }
+
+    private void loginUser(){
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(getActivity(), "Vui lòng nhập đủ Email và Mật khẩu!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users")
+                .whereEqualTo("email", email) // Tìm user có email này
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Chuyển dữ liệu từ Firestore thành đối tượng User
+                            User user = document.toObject(User.class);
+
+                            // 5. SO SÁNH MẬT KHẨU BẰNG BCRYPT
+                            // password là pass người dùng nhập, user.getPassword() là pass đã mã hóa trên database
+                            if (BCrypt.checkpw(password, user.getPasswordHash())) {
+                                // ĐĂNG NHẬP THÀNH CÔNG
+                                saveLoginState(user.getUsername());
+                                navigateToHome();
+
+                            } else {
+                                Toast.makeText(getActivity(), "Sai mật khẩu!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Email này chưa được đăng ký!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getActivity(), "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveLoginState(String username) {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLoggedIn", true);
+        editor.putString("username", username);
+        editor.apply();
+    }
+
+    private void navigateToHome() {
+        Toast.makeText(getActivity(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+        // Gọi lại MainActivity để cập nhật lại UI (hiện Bottom Nav và về Home)
+        if (getActivity() != null) {
+            View nav = getActivity().findViewById(R.id.home_bottom_navigation);
+            if (nav != null) {
+                ((com.google.android.material.bottomnavigation.BottomNavigationView) nav)
+                        .setSelectedItemId(R.id.bottom_nav_home);
+            }
+        }
+    }
+
 }
