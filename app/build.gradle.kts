@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation(libs.play.services.ads)
     implementation(libs.cardview)
     implementation(libs.cardview.v7)

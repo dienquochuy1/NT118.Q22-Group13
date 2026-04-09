@@ -4,15 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Home_user extends Fragment {
     public Home_user() {
-
     }
 
     @Override
@@ -26,61 +29,46 @@ public class Home_user extends Fragment {
         TextView tvUserTitle = view.findViewById(R.id.tv_role);
         Button btnLogout = view.findViewById(R.id.btn_logout);
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        boolean isLoggedIn = firebaseUser != null || prefs.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn) {
-            // TH1: ĐÃ ĐĂNG NHẬP
-            String username = prefs.getString("username", "Người dùng");
-            tvUserTitle.setText(username); // Đổi chữ "Khách" thành Tên
+            String username = prefs.getString("username", "");
+            if (TextUtils.isEmpty(username) && firebaseUser != null) {
+                username = firebaseUser.getEmail();
+            }
+            tvUserTitle.setText(TextUtils.isEmpty(username) ? "Nguoi dung" : username);
 
-            btnLogin.setVisibility(View.GONE);    // Ẩn nút đăng nhập
-            btnRegister.setVisibility(View.GONE); // Ẩn nút đăng ký
-            btnLogout.setVisibility(View.VISIBLE); // Hiện nút đăng xuất
+            btnLogin.setVisibility(View.GONE);
+            btnRegister.setVisibility(View.GONE);
+            btnLogout.setVisibility(View.VISIBLE);
         } else {
-            // TH2: CHƯA ĐĂNG NHẬP
-            tvUserTitle.setText("Khách");
+            tvUserTitle.setText("Khach");
             btnLogin.setVisibility(View.VISIBLE);
             btnRegister.setVisibility(View.VISIBLE);
             btnLogout.setVisibility(View.GONE);
         }
 
-
         btnLogout.setOnClickListener(v -> {
-            // Xóa dữ liệu đăng nhập
+            FirebaseAuth.getInstance().signOut();
             prefs.edit().clear().apply();
 
-            // F5 (Refresh) lại chính Fragment này để giao diện quay về chữ "Khách"
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new Home_user())
                     .commit();
         });
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Thực hiện chuyển đổi Fragment sang trang Login
+        btnLogin.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new Login())
+                .addToBackStack(null)
+                .commit());
 
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new Login()) // Thay thế bằng Fragment Login
-                        .addToBackStack(null) // LỆNH QUAN TRỌNG: Lưu trang này vào lịch sử để lùi lại được
-                        .commit();
-            }
-        });
+        btnRegister.setOnClickListener(v -> getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new Register())
+                .addToBackStack(null)
+                .commit());
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Thực hiện chuyển đổi Fragment sang trang Login
-
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new Register()) // Thay thế bằng Fragment Register
-                        .addToBackStack(null) // LỆNH QUAN TRỌNG: Lưu trang này vào lịch sử để lùi lại được
-                        .commit();
-            }
-        });
-
-        // 4. Trả về view đã cấu hình xong cho hệ thống hiển thị
         return view;
     }
 }
