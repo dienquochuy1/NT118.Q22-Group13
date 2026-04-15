@@ -271,7 +271,7 @@
                     android:background="#333333" />
             </LinearLayout>
 
-            <!-- Hai nút Google và Facebook -->
+            <!-- Nút đăng nhập mạng xã hội -->
             <LinearLayout
                 android:id="@+id/layout_social_buttons"
                 android:layout_width="match_parent"
@@ -282,13 +282,10 @@
                 app:layout_constraintTop_toBottomOf="@id/layout_divider_social">
 
                 <!-- Nút Google -->
-                <!-- Dùng MaterialCardView để tạo viền bo góc và background tối màu -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btn_google"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
                     app:cardBackgroundColor="#1A1A1A"
@@ -301,30 +298,7 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center"
-
-                        android:src="@drawable/google" /> <!-- Ghi chú: Bạn nhớ thêm icon ic_google.xml vào thư mục drawable nhé -->
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Nút Facebook -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btn_facebook"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardBackgroundColor="#1A1A1A"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#333333"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/facebook" /> <!-- Ghi chú: Nhớ thêm icon ic_facebook.xml -->
+                        android:src="@drawable/google" />
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
