@@ -28,6 +28,25 @@ public class Home_user extends Fragment {
         View btnRegister = view.findViewById(R.id.btn_register);
         TextView tvUserTitle = view.findViewById(R.id.tv_role);
         Button btnLogout = view.findViewById(R.id.btn_logout);
+        TextView menuTheme = view.findViewById(R.id.menu_theme);
+
+        SharedPreferences themePrefs = requireActivity().getSharedPreferences("ThemePrefs", Context.MODE_PRIVATE);
+        boolean isDarkMode = themePrefs.getBoolean("isDarkMode", false);
+        if (isDarkMode) {
+            menuTheme.setText("Giao diện (Sáng)");
+        } else {
+            menuTheme.setText("Giao diện (Tối)");
+        }
+
+        menuTheme.setOnClickListener(v -> {
+            boolean currentMode = themePrefs.getBoolean("isDarkMode", false);
+            themePrefs.edit().putBoolean("isDarkMode", !currentMode).apply();
+            if (!currentMode) {
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        });
 
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

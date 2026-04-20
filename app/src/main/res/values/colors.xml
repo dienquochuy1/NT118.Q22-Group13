@@ -5,10 +5,10 @@
     <color name="circle_border">#4B4A4A</color>
 
     <!-- Hacker / Night Owl Palette -->
-    <color name="primary_accent">#00E676</color>     <!-- Xanh lá Neon - Màu nhấn cho Nút, Icon chọn -->
-    <color name="background_dark">#121212</color>    <!-- Nền tổng thể của App -->
-    <color name="surface_dark">#1E1E1E</color>       <!-- Nền của Thẻ bài viết (CardView), Bottom Nav -->
-    <color name="text_primary">#E1E1E6</color>       <!-- Màu Tiêu đề, chữ nội dung chính -->
-    <color name="text_secondary">#A1A1AA</color>     <!-- Màu chữ phụ: Tên tác giả, ngày tháng, tóm tắt -->
-    <color name="divider_color">#2C2C2E</color>      <!-- Đường viền mờ hoặc vạch ngăn cách -->
+    <color name="primary_accent">#00C853</color>     <!-- Xanh lá sáng hơn cho Light Mode -->
+    <color name="background_dark">#F5F5F5</color>    <!-- Nền tổng thể (Ghi tên là dark nhưng đây là màu nền) -->
+    <color name="surface_dark">#FFFFFF</color>       <!-- Nền của Thẻ bài viết (Trắng) -->
+    <color name="text_primary">#212121</color>       <!-- Màu Tiêu đề (Đen đậm) -->
+    <color name="text_secondary">#757575</color>     <!-- Màu chữ phụ (Xám đen) -->
+    <color name="divider_color">#E0E0E0</color>      <!-- Đường viền mờ (Xám nhạt) -->
 </resources>
