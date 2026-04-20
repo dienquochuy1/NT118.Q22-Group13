@@ -20,6 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        android.content.SharedPreferences themePrefs = getSharedPreferences("ThemePrefs", android.content.Context.MODE_PRIVATE);
+        boolean isDarkMode = themePrefs.getBoolean("isDarkMode", false);
+        if (isDarkMode) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
@@ -50,9 +58,24 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
         }
-        // Mặc định luôn ở Trang chủ khi khởi động
-        activityMainBinding.layoutBottomNav.homeBottomNavigation.setSelectedItemId(R.id.bottom_nav_home);
-        showHomeUI();
+        // Khôi phục trạng thái tab khi Activity bị recreate (do đổi theme)
+        if (savedInstanceState == null) {
+            // Mặc định luôn ở Trang chủ khi khởi động lần đầu
+            activityMainBinding.layoutBottomNav.homeBottomNavigation.setSelectedItemId(R.id.bottom_nav_home);
+            showHomeUI();
+        } else {
+            // Đọc lại ID của tab đang chọn từ savedInstanceState thay vì view chưa được restore
+            int selectedId = savedInstanceState.getInt("selected_tab", R.id.bottom_nav_home);
+            if (selectedId == R.id.bottom_nav_user) {
+                // Fragment đã được tự động restore bởi FragmentManager,
+                // ta chỉ cần ẩn/hiện Layout và Header tương ứng.
+                activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
+                activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+                activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+            } else {
+                showHomeUI();
+            }
+        }
     }
 
     private void showHomeUI() {
@@ -78,5 +101,14 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(android.os.Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Lưu lại tab hiện tại trước khi Activity bị huỷ (ví dụ vì đổi theme)
+        if (activityMainBinding != null && activityMainBinding.layoutBottomNav != null) {
+            outState.putInt("selected_tab", activityMainBinding.layoutBottomNav.homeBottomNavigation.getSelectedItemId());
+        }
     }
 }

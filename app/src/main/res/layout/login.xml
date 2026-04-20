@@ -107,7 +107,7 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="Đăng nhập để bình luận, lưu bài viết và\nquản lý sở thích cá nhân của bạn."
-                android:textColor="#A0A0A0"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -156,7 +156,7 @@
                 app:boxStrokeColor="@color/circle_border"
                 app:boxStrokeWidth="3dp"
                 app:startIconDrawable="@drawable/mail"
-                app:startIconTint="#888888"
+                app:startIconTint="@color/text_secondary"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -174,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="MẬT KHẨU"
-                android:textColor="#A0A0A0"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:fontFamily="@font/inter_bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -193,10 +193,10 @@
                 app:boxStrokeColor="@color/circle_border"
                 app:boxStrokeWidth="3dp"
                 app:endIconMode="password_toggle"
-                app:endIconTint="#888888"
+                app:endIconTint="@color/text_secondary"
                 app:hintEnabled="false"
                 app:startIconDrawable="@drawable/password"
-                app:startIconTint="#888888"
+                app:startIconTint="@color/text_secondary"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -230,7 +230,7 @@
 
                 android:textAllCaps="true"
                 android:text="Đăng nhập"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
 
@@ -253,7 +253,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="#333333" /> <!-- Màu của đường kẻ -->
+                    android:background="@color/divider_color" /> <!-- Màu của đường kẻ -->
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -261,14 +261,14 @@
                     android:layout_marginHorizontal="16dp"
                     android:fontFamily="@font/inter_bold"
                     android:text="HOẶC ĐĂNG NHẬP VỚI"
-                    android:textColor="#A0A0A0"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="#333333" />
+                    android:background="@color/divider_color" />
             </LinearLayout>
 
             <!-- Nút đăng nhập mạng xã hội -->
@@ -288,10 +288,10 @@
                     android:layout_height="60dp"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardBackgroundColor="@color/surface_dark"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#333333"
+                    app:strokeColor="@color/divider_color"
                     app:strokeWidth="1dp">
 
                     <ImageView
@@ -322,7 +322,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chưa có tài khoản? "
-                    android:textColor="#A0A0A0"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
