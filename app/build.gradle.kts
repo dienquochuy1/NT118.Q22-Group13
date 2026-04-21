@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.cardview)
     implementation(libs.cardview.v7)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.glide)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

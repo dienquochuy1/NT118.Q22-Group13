@@ -16,6 +16,8 @@ playServicesAds = "25.1.0"
 cardview = "1.0.0"
 cardviewV7 = "28.0.0"
 firebaseFirestore = "26.1.2"
+firebaseStorage = "21.0.1"
+glide = "4.16.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,6 +35,8 @@ play-services-ads = { group = "com.google.android.gms", name = "play-services-ad
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 cardview-v7 = { group = "com.android.support", name = "cardview-v7", version.ref = "cardviewV7" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
