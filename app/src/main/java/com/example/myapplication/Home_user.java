@@ -26,6 +26,8 @@ public class Home_user extends Fragment {
     private android.widget.ImageView iconUser;
     private View btnLogin, btnRegister;
     private Button btnLogout;
+    private TextView tvStatArticles, tvStatSaved, tvStatInterests;
+    private com.google.android.material.chip.ChipGroup cgInterests;
 
     public Home_user() {
     }
@@ -43,6 +45,10 @@ public class Home_user extends Fragment {
         menuTheme = view.findViewById(R.id.menu_theme);
         iconUser = view.findViewById(R.id.icon_user);
         tvSubtitle = view.findViewById(R.id.tv_subtitle);
+        tvStatArticles = view.findViewById(R.id.tv_stat_articles);
+        tvStatSaved = view.findViewById(R.id.tv_stat_saved);
+        tvStatInterests = view.findViewById(R.id.tv_stat_interests);
+        cgInterests = view.findViewById(R.id.cg_interests);
 
         SharedPreferences themePrefs = requireActivity().getSharedPreferences("ThemePrefs", Context.MODE_PRIVATE);
         boolean isDarkMode = themePrefs.getBoolean("isDarkMode", false);
@@ -127,6 +133,47 @@ public class Home_user extends Fragment {
                                 if (bio != null && !bio.isEmpty()) {
                                     tvSubtitle.setText(bio);
                                 }
+                                
+                                // Load dynamic interests
+                                cgInterests.removeAllViews();
+                                Object interestsObj = documentSnapshot.get("interests");
+                                int interestsCount = 0;
+                                if (interestsObj instanceof java.util.List) {
+                                    java.util.List<?> interestsList = (java.util.List<?>) interestsObj;
+                                    for (Object item : interestsList) {
+                                        if (item != null) {
+                                            addInterestChip(item.toString());
+                                            interestsCount++;
+                                        }
+                                    }
+                                } else if (interestsObj instanceof String) {
+                                    String interestsStr = (String) interestsObj;
+                                    if (!interestsStr.trim().isEmpty()) {
+                                        String[] items = interestsStr.split(",");
+                                        for (String item : items) {
+                                            if (!item.trim().isEmpty()) {
+                                                addInterestChip(item.trim());
+                                                interestsCount++;
+                                            }
+                                        }
+                                    }
+                                }
+                                tvStatInterests.setText(String.valueOf(interestsCount));
+
+                                // Load dynamic stats if available, otherwise default to 0
+                                Long articlesCount = documentSnapshot.getLong("articles_count");
+                                if (articlesCount != null) {
+                                    tvStatArticles.setText(String.valueOf(articlesCount));
+                                } else {
+                                    tvStatArticles.setText("0");
+                                }
+                                
+                                Long savedCount = documentSnapshot.getLong("saved_count");
+                                if (savedCount != null) {
+                                    tvStatSaved.setText(String.valueOf(savedCount));
+                                } else {
+                                    tvStatSaved.setText("0");
+                                }
                             }
                         });
             }
@@ -141,6 +188,10 @@ public class Home_user extends Fragment {
             btnRegister.setVisibility(View.VISIBLE);
             btnLogout.setVisibility(View.GONE);
             iconUser.setImageResource(R.drawable.user);
+            tvStatArticles.setText("0");
+            tvStatSaved.setText("0");
+            tvStatInterests.setText("0");
+            cgInterests.removeAllViews();
         }
     }
 
@@ -156,5 +207,16 @@ public class Home_user extends Fragment {
                 iconUser.setImageResource(R.drawable.user);
             }
         }
+    }
+
+    private void addInterestChip(String text) {
+        if (getContext() == null) return;
+        com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(getContext());
+        chip.setText(text);
+        chip.setTextColor(androidx.core.content.ContextCompat.getColorStateList(getContext(), R.color.text_primary));
+        chip.setChipBackgroundColor(androidx.core.content.ContextCompat.getColorStateList(getContext(), R.color.chip_background));
+        chip.setChipStrokeColor(androidx.core.content.ContextCompat.getColorStateList(getContext(), R.color.chip_stroke));
+        chip.setChipStrokeWidth(getResources().getDisplayMetrics().density * 1);
+        cgInterests.addView(chip);
     }
 }
