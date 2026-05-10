@@ -4,14 +4,20 @@
     <color name="white">#FFFFFFFF</color>
     <color name="circle_border">#4B4A4A</color>
 
-    <!-- Hacker / Night Owl Palette -->
+    <!-- Hacker / Night Owl Palette — Dark Mode -->
     <color name="primary_accent">#00E676</color>     <!-- Xanh lá Neon - Màu nhấn cho Nút, Icon chọn -->
     <color name="background_dark">#121212</color>    <!-- Nền tổng thể của App -->
     <color name="surface_dark">#1E1E1E</color>       <!-- Nền của Thẻ bài viết (CardView), Bottom Nav -->
     <color name="text_primary">#E1E1E6</color>       <!-- Màu Tiêu đề, chữ nội dung chính -->
     <color name="text_secondary">#A1A1AA</color>     <!-- Màu chữ phụ: Tên tác giả, ngày tháng, tóm tắt -->
     <color name="divider_color">#2C2C2E</color>      <!-- Đường viền mờ hoặc vạch ngăn cách -->
-    
+
     <color name="chip_background">#2E372E</color>    <!-- Nền chip (Tối) -->
     <color name="chip_stroke">#3B4A3D</color>        <!-- Viền chip (Tối) -->
+
+    <!-- Accent variations -->
+    <color name="primary_action">#17B169</color>      <!-- CTA Buttons darker green -->
+    <color name="accent_bright">#00FF85</color>       <!-- Maximum brightness neon -->
+    <color name="error_color">#EF0C0C</color>         <!-- Destructive actions -->
+    <color name="warning_amber">#EAB308</color>       <!-- Warning/info icons -->
 </resources>

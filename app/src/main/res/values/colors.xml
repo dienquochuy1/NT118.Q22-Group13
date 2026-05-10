@@ -4,14 +4,20 @@
     <color name="white">#FFFFFFFF</color>
     <color name="circle_border">#4B4A4A</color>
 
-    <!-- Hacker / Night Owl Palette -->
+    <!-- Hacker / Night Owl Palette — Light Mode -->
     <color name="primary_accent">#00C853</color>     <!-- Xanh lá sáng hơn cho Light Mode -->
-    <color name="background_dark">#F5F5F5</color>    <!-- Nền tổng thể (Ghi tên là dark nhưng đây là màu nền) -->
-    <color name="surface_dark">#FFFFFF</color>       <!-- Nền của Thẻ bài viết (Trắng) -->
-    <color name="text_primary">#212121</color>       <!-- Màu Tiêu đề (Đen đậm) -->
-    <color name="text_secondary">#757575</color>     <!-- Màu chữ phụ (Xám đen) -->
-    <color name="divider_color">#E0E0E0</color>      <!-- Đường viền mờ (Xám nhạt) -->
-    
-    <color name="chip_background">#EAEAEA</color>    <!-- Nền chip (Sáng) -->
-    <color name="chip_stroke">#CCCCCC</color>        <!-- Viền chip (Sáng) -->
+    <color name="background_dark">#F5F5F5</color>    <!-- Nền tổng thể -->
+    <color name="surface_dark">#FFFFFF</color>        <!-- Nền của Thẻ bài viết (Trắng) -->
+    <color name="text_primary">#212121</color>        <!-- Màu Tiêu đề (Đen đậm) -->
+    <color name="text_secondary">#757575</color>      <!-- Màu chữ phụ (Xám đen) -->
+    <color name="divider_color">#E0E0E0</color>       <!-- Đường viền mờ (Xám nhạt) -->
+
+    <color name="chip_background">#EAEAEA</color>     <!-- Nền chip (Sáng) -->
+    <color name="chip_stroke">#CCCCCC</color>         <!-- Viền chip (Sáng) -->
+
+    <!-- Accent variations -->
+    <color name="primary_action">#17B169</color>      <!-- CTA Buttons darker green -->
+    <color name="accent_bright">#00FF85</color>       <!-- Maximum brightness neon -->
+    <color name="error_color">#EF0C0C</color>         <!-- Destructive actions -->
+    <color name="warning_amber">#EAB308</color>       <!-- Warning/info icons -->
 </resources>
