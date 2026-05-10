@@ -19,6 +19,11 @@
             android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <activity
+            android:name=".ArticleDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".Edit_Profile"
             android:exported="false" />
 
