@@ -12,24 +12,22 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.Entity.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.myapplication.auth.AuthCallback;
+import com.example.myapplication.auth.AuthErrorInfo;
+import com.example.myapplication.auth.AuthRepository;
+import com.example.myapplication.data.auth.AuthData;
 
 public class Register extends Fragment {
-    private FirebaseFirestore db;
-    private FirebaseAuth auth;
     private EditText etUsername, etEmail, etPassword;
     private Button btnRegister;
     private TextView login;
+    private AuthRepository authRepository;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.register, container, false);
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        authRepository = new AuthRepository(requireContext());
 
         etUsername = view.findViewById(R.id.et_name);
         etEmail = view.findViewById(R.id.et_email);
@@ -65,50 +63,31 @@ public class Register extends Fragment {
             return;
         }
 
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser firebaseUser = authResult.getUser();
-                    if (firebaseUser == null) {
-                        Toast.makeText(getActivity(), "Khong the tao tai khoan.", Toast.LENGTH_LONG).show();
-                        return;
-                    }
+        if (!username.matches("^[\\p{L}\\p{M}0-9\\- ]+$")) {
+            Toast.makeText(getActivity(), "Ten nguoi dung khong hop le.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                    String uid = firebaseUser.getUid();
-                    User user = new User(uid, username, email, "", "", "user");
+        authRepository.register(username, email, password, new AuthCallback<AuthData>() {
+            @Override
+            public void onSuccess(AuthData data) {
+                Toast.makeText(getActivity(), "Tao tai khoan thanh cong!", Toast.LENGTH_LONG).show();
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new Successful_Nofitication())
+                            .addToBackStack(null)
+                            .commit();
+                }, 100);
+            }
 
-                    db.collection("users").document(uid)
-                            .set(user)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(getActivity(), "Tao tai khoan thanh cong!", Toast.LENGTH_LONG).show();
-
-                                android.content.SharedPreferences sharedPreferences = getActivity()
-                                        .getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE);
-                                android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putBoolean("isLoggedIn", true);
-                                editor.putString("username", username);
-                                editor.putString("uid", uid);
-                                editor.apply();
-
-                                if (getActivity() != null) {
-                                    View bottomNav = getActivity().findViewById(R.id.layoutBottomNav);
-                                    if (bottomNav != null) {
-                                        bottomNav.setVisibility(View.GONE);
-                                    }
-                                }
-
-                                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                                    getParentFragmentManager().beginTransaction()
-                                            .replace(R.id.fragment_container, new Successful_Nofitication())
-                                            .addToBackStack(null)
-                                            .commit();
-                                }, 100);
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(getActivity(), "Tao profile that bai: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getActivity(), "Dang ky that bai: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+            @Override
+            public void onError(AuthErrorInfo error) {
+                String message = error.getMessage();
+                if (error.getFieldErrors() != null && !error.getFieldErrors().isEmpty()) {
+                    message = error.getFieldErrors().get(0);
+                }
+                Toast.makeText(getActivity(), "Dang ky that bai: " + message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
