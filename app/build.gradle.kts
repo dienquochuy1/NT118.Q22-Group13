@@ -15,7 +15,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8000/api/techbyte/\"")
+        // Use emulator host mapping (10.0.2.2) so Android emulator can reach the backend on the development machine.
+        // If you're testing on a real device, replace with your host machine IP e.g. "http://192.168.x.y:8000/api/techbyte/"
+        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000/api/techbyte/\"")
     }
 
     buildTypes {

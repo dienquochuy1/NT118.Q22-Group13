@@ -19,11 +19,18 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.databinding.ActivityEditProfileBinding;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.example.myapplication.network.ApiClient;
+import com.example.myapplication.data.ApiResponse;
+import com.example.myapplication.data.auth.UserDto;
+import com.example.myapplication.auth.SessionStore;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.PUT;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -33,9 +40,7 @@ import java.util.Map;
 public class Edit_Profile extends AppCompatActivity {
 
     private ActivityEditProfileBinding binding;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
+    private SessionStore sessionStore;
     private Uri imageUri;
     private String currentUserId;
 
@@ -61,17 +66,14 @@ public class Edit_Profile extends AppCompatActivity {
             return insets;
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser == null) {
+        // Use backend session store to obtain current user info/token
+        sessionStore = new SessionStore(this);
+        if (!sessionStore.isLoggedIn()) {
             finish();
             return;
         }
 
-        currentUserId = currentUser.getUid();
+        currentUserId = sessionStore.getUserId();
 
         loadUserData();
 
@@ -83,23 +85,47 @@ public class Edit_Profile extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        db.collection("users").document(currentUserId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String username = documentSnapshot.getString("username");
-                        String bio = documentSnapshot.getString("bio");
-                        String avatar = documentSnapshot.getString("avatar");
+        Retrofit retrofit = ApiClient.getRetrofit();
+        UserApi userApi = retrofit.create(UserApi.class);
+        String authorization = sessionStore.getTokenType() + " " + sessionStore.getAccessToken();
+        userApi.getMe(authorization).enqueue(new Callback<ApiResponse<UserDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<UserDto>> call, Response<ApiResponse<UserDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    UserDto user = response.body().getData();
+                    if (user != null) {
+                        binding.etEditUsername.setText(user.getUsername() != null ? user.getUsername() : user.getName());
+                        // backend must provide 'bio' and 'avatar' fields inside user DTO if needed; fallback to empty
+                        try {
+                            java.lang.reflect.Method m = user.getClass().getMethod("getBio");
+                            Object bioObj = m.invoke(user);
+                            String bio = bioObj != null ? bioObj.toString() : "";
+                            binding.etEditBio.setText(bio);
+                        } catch (Exception ignored) {
+                            binding.etEditBio.setText("");
+                        }
 
-                        binding.etEditUsername.setText(username);
-                        binding.etEditBio.setText(bio);
-
-                        if (avatar != null && !avatar.isEmpty()) {
-                            loadAvatarImage(avatar);
+                        try {
+                            java.lang.reflect.Method m2 = user.getClass().getMethod("getAvatar");
+                            Object avatarObj = m2.invoke(user);
+                            String avatar = avatarObj != null ? avatarObj.toString() : "";
+                            if (avatar != null && !avatar.isEmpty()) {
+                                loadAvatarImage(avatar);
+                            }
+                        } catch (Exception ignored) {
+                            // ignore if fields not present in DTO
                         }
                     }
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, "Không thể tải dữ liệu", Toast.LENGTH_SHORT).show());
+                } else {
+                    Toast.makeText(Edit_Profile.this, "Không thể tải dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<UserDto>> call, Throwable t) {
+                Toast.makeText(Edit_Profile.this, "Không thể tải dữ liệu: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void saveChanges() {
@@ -117,7 +143,7 @@ public class Edit_Profile extends AppCompatActivity {
         if (imageUri != null) {
             uploadAvatar(newUsername, newBio);
         } else {
-            updateFirestore(newUsername, newBio, null);
+            updateProfile(newUsername, newBio, null);
         }
     }
 
@@ -125,7 +151,7 @@ public class Edit_Profile extends AppCompatActivity {
         // Thay vì upload lên Storage, chúng ta chuyển ảnh sang Base64 để lưu vào Firestore
         String base64Image = uriToBase64(imageUri);
         if (base64Image != null) {
-            updateFirestore(username, bio, base64Image);
+            updateProfile(username, bio, base64Image);
         } else {
             binding.btnSaveProfile.setEnabled(true);
             binding.btnSaveProfile.setText("LƯU THAY ĐỔI");
@@ -179,7 +205,11 @@ public class Edit_Profile extends AppCompatActivity {
         }
     }
 
-    private void updateFirestore(String username, String bio, String avatarUrl) {
+    private void updateProfile(String username, String bio, String avatarUrl) {
+        Retrofit retrofit = ApiClient.getRetrofit();
+        UserApi userApi = retrofit.create(UserApi.class);
+        String authorization = sessionStore.getTokenType() + " " + sessionStore.getAccessToken();
+
         Map<String, Object> updates = new HashMap<>();
         updates.put("username", username);
         updates.put("bio", bio);
@@ -187,23 +217,51 @@ public class Edit_Profile extends AppCompatActivity {
             updates.put("avatar", avatarUrl);
         }
 
-        db.collection("users").document(currentUserId)
-                .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    // Cập nhật local SharedPreferences
+        userApi.updateMe(authorization, updates).enqueue(new Callback<ApiResponse<UserDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<UserDto>> call, Response<ApiResponse<UserDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    // Cập nhật local SharedPreferences (UserPrefs)
                     android.content.SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs",
                             android.content.Context.MODE_PRIVATE);
                     android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("username", username);
                     editor.apply();
 
-                    Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                    // Also update the centralized Auth session store so UI reading from SessionStore
+                    // (Home_user and other screens) reflect the new username immediately.
+                    try {
+                        if (sessionStore != null) {
+                            sessionStore.updateUserUsername(username);
+                            sessionStore.updateUserName(username);
+                        }
+                    } catch (Exception ignored) {
+                    }
+
+                    Toast.makeText(Edit_Profile.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                     finish();
-                })
-                .addOnFailureListener(e -> {
+                } else {
                     binding.btnSaveProfile.setEnabled(true);
                     binding.btnSaveProfile.setText("LƯU THAY ĐỔI");
-                    Toast.makeText(this, "Lỗi cập nhật Firestore", Toast.LENGTH_SHORT).show();
-                });
+                    Toast.makeText(Edit_Profile.this, "Lỗi cập nhật profile", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<UserDto>> call, Throwable t) {
+                binding.btnSaveProfile.setEnabled(true);
+                binding.btnSaveProfile.setText("LƯU THAY ĐỔI");
+                Toast.makeText(Edit_Profile.this, "Lỗi cập nhật profile: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Define a small Retrofit interface locally to avoid creating new files
+    interface UserApi {
+        @GET("me")
+        Call<ApiResponse<UserDto>> getMe(@Header("Authorization") String authorization);
+
+        @PUT("me")
+        Call<ApiResponse<UserDto>> updateMe(@Header("Authorization") String authorization, @Body Map<String, Object> body);
     }
 }

@@ -91,6 +91,16 @@ public class SessionStore {
         return prefs.getString(KEY_USER_ROLE, "");
     }
 
+    // Update only the stored user display name
+    public void updateUserName(String name) {
+        prefs.edit().putString(KEY_USER_NAME, name != null ? name : "").apply();
+    }
+
+    // Update only the stored user username (login name / handle)
+    public void updateUserUsername(String username) {
+        prefs.edit().putString(KEY_USER_USERNAME, username != null ? username : "").apply();
+    }
+
     public void clearSession() {
         prefs.edit().clear().apply();
     }

@@ -12,29 +12,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.Entity.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.myapplication.auth.AuthCallback;
+import com.example.myapplication.auth.AuthErrorInfo;
+import com.example.myapplication.auth.AuthRepository;
+import com.example.myapplication.data.auth.AuthData;
+// Firebase calls are being migrated to backend API. Firebase SDK usages in this file are disabled.
 
 public class Login extends Fragment {
 
     private EditText etEmail, etPassword;
-    private FirebaseFirestore db;
-    private FirebaseAuth auth;
+    private AuthRepository authRepository;
     private GoogleSignInClient googleSignInClient;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
 
@@ -72,8 +71,8 @@ public class Login extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login, container, false);
 
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        // Use backend AuthRepository instead of FirebaseAuth
+        authRepository = new AuthRepository(requireContext());
 
         etEmail = view.findViewById(R.id.et_email);
         etPassword = view.findViewById(R.id.et_password);
@@ -97,7 +96,8 @@ public class Login extends Fragment {
                 .addToBackStack(null)
                 .commit());
 
-        btnGoogle.setOnClickListener(v -> startGoogleSignIn());
+        // Google Sign-In temporarily disabled (kept in code for future re-enable)
+        btnGoogle.setOnClickListener(v -> Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show());
         btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         return view;
@@ -129,36 +129,15 @@ public class Login extends Fragment {
     }
 
     private void startGoogleSignIn() {
-        if (googleSignInClient == null) {
-            Toast.makeText(getActivity(), "Google Sign-In chua duoc cau hinh trong Firebase.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        googleSignInClient.signOut().addOnCompleteListener(task -> {
-            Intent signInIntent = googleSignInClient.getSignInIntent();
-            googleSignInLauncher.launch(signInIntent);
-        });
+        // No-op while Google Sign-In is disabled. Keep method for future re-enable.
+        Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show();
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-
-        auth.signInWithCredential(credential)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser firebaseUser = authResult.getUser();
-                    if (firebaseUser == null) {
-                        Toast.makeText(getActivity(), "Dang nhap Google that bai.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    String fallbackName = account.getDisplayName();
-                    if (TextUtils.isEmpty(fallbackName)) {
-                        fallbackName = firebaseUser.getEmail();
-                    }
-                    syncProfileAndCompleteLogin(firebaseUser, fallbackName);
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getActivity(), "Dang nhap Google that bai: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        // Google sign-in flow disabled. If you later want to support social login via backend,
+        // implement sending the Google idToken to your backend and exchange for an access token.
+        Log.i("Login", "firebaseAuthWithGoogle called but Google Sign-In is disabled");
+        Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show();
     }
 
     private void loginUser() {
@@ -170,46 +149,33 @@ public class Login extends Fragment {
             return;
         }
 
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser firebaseUser = authResult.getUser();
-                    if (firebaseUser == null) {
-                        Toast.makeText(getActivity(), "Dang nhap that bai.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+        // Use backend AuthRepository for login
+        authRepository.login(email, password, new AuthCallback<AuthData>() {
+            @Override
+            public void onSuccess(AuthData data) {
+                if (data == null || data.getUser() == null) {
+                    Toast.makeText(getActivity(), "Đăng nhập thất bại: dữ liệu user không có", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                String uid = data.getUser().getId();
+                String username = data.getUser().getUsername();
+                if (username == null || username.isEmpty()) {
+                    username = data.getUser().getName() != null ? data.getUser().getName() : data.getUser().getEmail();
+                }
+                completeLogin(uid, username);
+            }
 
-                    syncProfileAndCompleteLogin(firebaseUser, firebaseUser.getEmail());
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getActivity(), "Dang nhap that bai: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            @Override
+            public void onError(AuthErrorInfo error) {
+                String message = error != null && error.getMessage() != null ? error.getMessage() : "Đăng nhập thất bại";
+                if (error != null && error.getFieldErrors() != null && !error.getFieldErrors().isEmpty()) {
+                    message = error.getFieldErrors().get(0);
+                }
+                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
-
-    private void syncProfileAndCompleteLogin(FirebaseUser firebaseUser, String fallbackName) {
-        String uid = firebaseUser.getUid();
-        String email = firebaseUser.getEmail() != null ? firebaseUser.getEmail() : "";
-        String safeFallbackName = TextUtils.isEmpty(fallbackName) ? email : fallbackName;
-
-        db.collection("users").document(uid)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    if (snapshot.exists()) {
-                        User user = snapshot.toObject(User.class);
-                        String username = user != null ? user.getUsername() : safeFallbackName;
-                        if (TextUtils.isEmpty(username)) {
-                            username = safeFallbackName;
-                        }
-                        completeLogin(uid, username);
-                        return;
-                    }
-
-                    User newUser = new User(uid, safeFallbackName, email, "", "", "user");
-                    db.collection("users").document(uid)
-                            .set(newUser)
-                            .addOnSuccessListener(unused -> completeLogin(uid, safeFallbackName))
-                            .addOnFailureListener(e -> completeLogin(uid, safeFallbackName));
-                })
-                .addOnFailureListener(e -> completeLogin(uid, safeFallbackName));
-    }
+    // syncProfileAndCompleteLogin removed: backend is responsible for user records. We use AuthData from backend.
 
     private void completeLogin(String uid, String username) {
         saveLoginState(uid, username);

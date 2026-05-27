@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext only for emulator host used in development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+
+    <!-- Default policy: do not permit cleartext for other domains -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
+
+
