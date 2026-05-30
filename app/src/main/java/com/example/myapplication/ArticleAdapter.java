@@ -76,6 +76,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         // Card click → Open Article Detail
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ArticleDetailActivity.class);
+            intent.putExtra("article_id", article.getId());
             intent.putExtra("article_title", article.getTitle());
             intent.putExtra("article_content", article.getContent());
             intent.putExtra("article_summary", article.getSummary());
