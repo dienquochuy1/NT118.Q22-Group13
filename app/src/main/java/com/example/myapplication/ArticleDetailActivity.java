@@ -84,8 +84,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             com.bumptech.glide.Glide.with(this)
                     .load(imageUrl)
+                    .placeholder(R.drawable.bg_article_image_placeholder)
+                    .error(R.drawable.bg_article_image_placeholder)
                     .centerCrop()
                     .into(imgHero);
+        } else {
+            com.bumptech.glide.Glide.with(this).clear(imgHero);
+            imgHero.setImageDrawable(null);
         }
 
         // Back button

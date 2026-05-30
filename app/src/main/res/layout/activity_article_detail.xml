@@ -102,7 +102,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:scaleType="centerCrop"
-                android:background="@color/chip_background" />
+                android:background="@drawable/bg_article_image_placeholder"
+                android:contentDescription="@string/article_thumbnail" />
 
             <!-- Article Content Container -->
             <LinearLayout
