@@ -9,8 +9,14 @@ public class Articles {
     private String source;
     private String author;
     private String imageUrl;
+    private String slug;
+    private String originalUrl;
+    private String urlHash;
     private String publishDate;
     private long timestamp;
+    private int viewCount;
+    private String status;
+    private int sourceId;
     private boolean bookmarked;
 
     public Articles() {}
@@ -40,8 +46,17 @@ public class Articles {
     public String getSource() { return source; }
     public String getAuthor() { return author; }
     public String getImageUrl() { return imageUrl; }
+    public String getThumbnailURL() { return imageUrl; }
+    public String getSlug() { return slug; }
+    public String getOriginalUrl() { return originalUrl; }
+    public String getOriginalURL() { return originalUrl; }
+    public String getUrlHash() { return urlHash; }
+    public String getURLHash() { return urlHash; }
     public String getPublishDate() { return publishDate; }
     public long getTimestamp() { return timestamp; }
+    public int getViewCount() { return viewCount; }
+    public String getStatus() { return status; }
+    public int getSourceId() { return sourceId; }
     public boolean isBookmarked() { return bookmarked; }
 
     // Setters
@@ -53,7 +68,16 @@ public class Articles {
     public void setSource(String source) { this.source = source; }
     public void setAuthor(String author) { this.author = author; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setThumbnailURL(String thumbnailURL) { this.imageUrl = thumbnailURL; }
+    public void setSlug(String slug) { this.slug = slug; }
+    public void setOriginalUrl(String originalUrl) { this.originalUrl = originalUrl; }
+    public void setOriginalURL(String originalURL) { this.originalUrl = originalURL; }
+    public void setUrlHash(String urlHash) { this.urlHash = urlHash; }
+    public void setURLHash(String urlHash) { this.urlHash = urlHash; }
     public void setPublishDate(String publishDate) { this.publishDate = publishDate; }
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
+    public void setStatus(String status) { this.status = status; }
+    public void setSourceId(int sourceId) { this.sourceId = sourceId; }
     public void setBookmarked(boolean bookmarked) { this.bookmarked = bookmarked; }
 }

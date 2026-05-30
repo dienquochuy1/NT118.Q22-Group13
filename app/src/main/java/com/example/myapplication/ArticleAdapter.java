@@ -56,8 +56,13 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
             com.bumptech.glide.Glide.with(context)
                     .load(article.getImageUrl())
+                    .placeholder(R.drawable.bg_article_image_placeholder)
+                    .error(R.drawable.bg_article_image_placeholder)
                     .centerCrop()
                     .into(holder.imgArticle);
+        } else {
+            com.bumptech.glide.Glide.with(context).clear(holder.imgArticle);
+            holder.imgArticle.setImageDrawable(null);
         }
 
         // Bookmark click

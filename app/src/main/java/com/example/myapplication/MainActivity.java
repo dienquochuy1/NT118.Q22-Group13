@@ -16,6 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Entity.Articles;
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -122,9 +126,110 @@ public class MainActivity extends AppCompatActivity {
         if (recyclerView == null) return;
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        articleList = getSampleArticles();
+        articleList = new ArrayList<>();
         articleAdapter = new ArticleAdapter(this, articleList);
         recyclerView.setAdapter(articleAdapter);
+        loadArticlesFromFirestore();
+    }
+
+    private void loadArticlesFromFirestore() {
+        FirebaseFirestore.getInstance()
+                .collection("Article")
+                .orderBy("PublishDate", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Articles> loadedArticles = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        loadedArticles.add(mapArticleDocument(document));
+                    }
+
+                    if (loadedArticles.isEmpty()) {
+                        loadedArticles = getSampleArticles();
+                    }
+
+                    articleList.clear();
+                    articleList.addAll(loadedArticles);
+                    articleAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    articleList.clear();
+                    articleList.addAll(getSampleArticles());
+                    articleAdapter.notifyDataSetChanged();
+                });
+    }
+
+    private Articles mapArticleDocument(DocumentSnapshot document) {
+        Articles article = new Articles();
+
+        article.setId(readString(document, "Article_ID", document.getId()));
+        article.setTitle(readString(document, "Title", ""));
+        article.setSlug(readString(document, "Slug", ""));
+        article.setImageUrl(readString(document, "ThumbnailURL", ""));
+        article.setOriginalUrl(readString(document, "Original_URL", ""));
+        article.setUrlHash(readString(document, "URL_Hash", ""));
+        article.setPublishDate(formatPublishDate(document.get("PublishDate")));
+        article.setTimestamp(readTimestamp(document.get("PublishDate")));
+        article.setViewCount(readInt(document, "ViewCount", 0));
+        article.setStatus(readString(document, "Status", ""));
+        article.setSourceId(readInt(document, "Source_ID", 0));
+
+        article.setSummary(readString(document, "Summary", ""));
+        article.setContent(readString(document, "Content", article.getSummary()));
+        article.setCategory(readString(document, "Category", "Tin tức"));
+        article.setSource(readString(document, "Source", "TechByte"));
+        article.setAuthor(readString(document, "Author", ""));
+
+        return article;
+    }
+
+    private String readString(DocumentSnapshot document, String fieldName, String fallback) {
+        Object value = document.get(fieldName);
+        if (value == null) {
+            return fallback;
+        }
+        return String.valueOf(value);
+    }
+
+    private int readInt(DocumentSnapshot document, String fieldName, int fallback) {
+        Object value = document.get(fieldName);
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException ignored) {
+                return fallback;
+            }
+        }
+        return fallback;
+    }
+
+    private long readTimestamp(Object value) {
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toDate().getTime();
+        }
+        if (value instanceof Date) {
+            return ((Date) value).getTime();
+        }
+        return System.currentTimeMillis();
+    }
+
+    private String formatPublishDate(Object value) {
+        if (value instanceof Timestamp) {
+            return formatDate(((Timestamp) value).toDate());
+        }
+        if (value instanceof Date) {
+            return formatDate((Date) value);
+        }
+        if (value instanceof String && !((String) value).isEmpty()) {
+            return (String) value;
+        }
+        return "";
+    }
+
+    private String formatDate(Date date) {
+        return new SimpleDateFormat("dd 'Th' M, yyyy", new Locale("vi")).format(date);
     }
 
     /**

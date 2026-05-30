@@ -25,7 +25,8 @@
             android:layout_width="0dp"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:background="@color/chip_background"
+            android:background="@drawable/bg_article_image_placeholder"
+            android:contentDescription="@string/article_thumbnail"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
