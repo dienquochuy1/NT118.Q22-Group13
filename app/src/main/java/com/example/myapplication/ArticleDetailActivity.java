@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -21,7 +20,6 @@ import com.example.myapplication.auth.SessionStore;
 import com.example.myapplication.data.ApiResponse;
 import com.example.myapplication.data.ArticleDetailResponse;
 import com.example.myapplication.data.ArticleDetailData;
-import com.example.myapplication.data.comment.CommentCreateRequest;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.network.ApiClient;
 
@@ -57,7 +55,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         androidx.activity.EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_article_detail);
+        setContentView(R.layout.article_detail);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_article_detail), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
