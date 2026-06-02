@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +15,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.data.home.HomeArticle;
+import com.example.myapplication.data.home.HomeResponse;
 import com.example.myapplication.databinding.ActivityMainBinding;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.example.myapplication.network.ApiClient;
+import com.example.myapplication.network.HomeApi;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,12 +30,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding activityMainBinding;
-    private RecyclerView recyclerView;
-    private ArticleAdapter articleAdapter;
-    private List<Articles> articleList;
+
+    private ViewPager2 viewPagerFeatured;
+    private RecyclerView rvFavorites;
+    private RecyclerView rvGeneral;
+
+    private FeaturedAdapter featuredAdapter;
+    private FavoritesAdapter favoritesAdapter;
+    private ArticlesAdapter articlesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,41 +68,30 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Update the date in the header
         updateHeaderDate();
+        setupHomeLists();
 
-        // Setup RecyclerView for articles
-        setupRecyclerView();
-
-        // Xử lý sự kiện click trên Bottom Navigation
         com.google.android.material.bottomnavigation.BottomNavigationView navView = findViewById(R.id.home_bottom_navigation);
         if(navView != null){
             activityMainBinding.layoutBottomNav.homeBottomNavigation.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
-
                 if (id == R.id.bottom_nav_home) {
-                    // Hiện lại giao diện Trang chủ
                     showHomeUI();
                     return true;
                 } else if (id == R.id.bottom_nav_user) {
-                    // Chuyển sang giao diện Cá nhân (Đăng nhập)
                     showUserUI();
                     return true;
                 }
                 return false;
             });
         }
-        // Khôi phục trạng thái tab khi Activity bị recreate (do đổi theme)
+
         if (savedInstanceState == null) {
-            // Mặc định luôn ở Trang chủ khi khởi động lần đầu
             activityMainBinding.layoutBottomNav.homeBottomNavigation.setSelectedItemId(R.id.bottom_nav_home);
             showHomeUI();
         } else {
-            // Đọc lại ID của tab đang chọn từ savedInstanceState thay vì view chưa được restore
             int selectedId = savedInstanceState.getInt("selected_tab", R.id.bottom_nav_home);
             if (selectedId == R.id.bottom_nav_user) {
-                // Fragment đã được tự động restore bởi FragmentManager,
-                // ta chỉ cần ẩn/hiện Layout và Header tương ứng.
                 activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
                 activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
                 activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
@@ -100,226 +101,145 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Cập nhật ngày tháng hiện tại trên header theo định dạng tiếng Việt.
-     */
     private void updateHeaderDate() {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd 'Tháng' M, yyyy", new Locale("vi"));
             String currentDate = sdf.format(new Date());
-            // Viết hoa chữ cái đầu
             currentDate = currentDate.substring(0, 1).toUpperCase() + currentDate.substring(1);
             android.widget.TextView tvDate = findViewById(R.id.tv_date);
             if (tvDate != null) {
                 tvDate.setText(currentDate);
             }
-        } catch (Exception e) {
-            // Ignore date formatting errors
+        } catch (Exception ignored) {}
+    }
+
+    private void setupHomeLists() {
+        viewPagerFeatured = findViewById(R.id.vp_featured);
+        rvFavorites = findViewById(R.id.rv_favorites);
+        rvGeneral = findViewById(R.id.rv_general);
+
+        featuredAdapter = new FeaturedAdapter(this, new ArrayList<>(), this::onArticleSelected);
+        favoritesAdapter = new FavoritesAdapter(this, new ArrayList<>(), this::onArticleSelected);
+        articlesAdapter = new ArticlesAdapter(this, new ArrayList<>(), this::onArticleSelected);
+
+        if (viewPagerFeatured != null) {
+            viewPagerFeatured.setAdapter(featuredAdapter);
+            viewPagerFeatured.setOffscreenPageLimit(1);
         }
+
+        if (rvFavorites != null) {
+            rvFavorites.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvFavorites.setAdapter(favoritesAdapter);
+        }
+
+        if (rvGeneral != null) {
+            rvGeneral.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            rvGeneral.setAdapter(articlesAdapter);
+        }
+
+        // Bắt đầu kích hoạt gọi API mạng lấy dữ liệu thật
+        fetchHomeData();
     }
 
     /**
-     * Thiết lập RecyclerView với dữ liệu mẫu bài viết tin tức công nghệ.
+     * Thực hiện kết nối API lấy gói dữ liệu Trang chủ từ Backend (Aiven Cloud)
      */
-    private void setupRecyclerView() {
-        recyclerView = findViewById(R.id.recycler_view);
-        if (recyclerView == null) return;
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        articleList = new ArrayList<>();
-        articleAdapter = new ArticleAdapter(this, articleList);
-        recyclerView.setAdapter(articleAdapter);
-        loadArticlesFromFirestore();
-    }
-
-    private void loadArticlesFromFirestore() {
-        FirebaseFirestore.getInstance()
-                .collection("Article")
-                .orderBy("PublishDate", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<Articles> loadedArticles = new ArrayList<>();
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        loadedArticles.add(mapArticleDocument(document));
-                    }
-
-                    if (loadedArticles.isEmpty()) {
-                        loadedArticles = getSampleArticles();
-                    }
-
-                    articleList.clear();
-                    articleList.addAll(loadedArticles);
-                    articleAdapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    articleList.clear();
-                    articleList.addAll(getSampleArticles());
-                    articleAdapter.notifyDataSetChanged();
-                });
-    }
-
-    private Articles mapArticleDocument(DocumentSnapshot document) {
-        Articles article = new Articles();
-
-        article.setId(readString(document, "Article_ID", document.getId()));
-        article.setTitle(readString(document, "Title", ""));
-        article.setSlug(readString(document, "Slug", ""));
-        article.setImageUrl(readString(document, "ThumbnailURL", ""));
-        article.setOriginalUrl(readString(document, "Original_URL", ""));
-        article.setUrlHash(readString(document, "URL_Hash", ""));
-        article.setPublishDate(formatPublishDate(document.get("PublishDate")));
-        article.setTimestamp(readTimestamp(document.get("PublishDate")));
-        article.setViewCount(readInt(document, "ViewCount", 0));
-        article.setStatus(readString(document, "Status", ""));
-        article.setSourceId(readInt(document, "Source_ID", 0));
-
-        article.setSummary(readString(document, "Summary", ""));
-        article.setContent(readString(document, "Content", article.getSummary()));
-        article.setCategory(readString(document, "Category", "Tin tức"));
-        article.setSource(readString(document, "Source", "TechByte"));
-        article.setAuthor(readString(document, "Author", ""));
-
-        return article;
-    }
-
-    private String readString(DocumentSnapshot document, String fieldName, String fallback) {
-        Object value = document.get(fieldName);
-        if (value == null) {
-            return fallback;
-        }
-        return String.valueOf(value);
-    }
-
-    private int readInt(DocumentSnapshot document, String fieldName, int fallback) {
-        Object value = document.get(fieldName);
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
-        }
-        if (value instanceof String) {
-            try {
-                return Integer.parseInt((String) value);
-            } catch (NumberFormatException ignored) {
-                return fallback;
+    private void fetchHomeData() {
+        HomeApi homeApi = ApiClient.getHomeApi();
+        homeApi.getHome().enqueue(new Callback<HomeResponse>() {
+            @Override
+            public void onResponse(Call<HomeResponse> call, Response<HomeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    applyHomeData(response.body());
+                } else {
+                    Toast.makeText(MainActivity.this, "Backend phản hồi lỗi: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
-        return fallback;
-    }
 
-    private long readTimestamp(Object value) {
-        if (value instanceof Timestamp) {
-            return ((Timestamp) value).toDate().getTime();
-        }
-        if (value instanceof Date) {
-            return ((Date) value).getTime();
-        }
-        return System.currentTimeMillis();
-    }
-
-    private String formatPublishDate(Object value) {
-        if (value instanceof Timestamp) {
-            return formatDate(((Timestamp) value).toDate());
-        }
-        if (value instanceof Date) {
-            return formatDate((Date) value);
-        }
-        if (value instanceof String && !((String) value).isEmpty()) {
-            return (String) value;
-        }
-        return "";
-    }
-
-    private String formatDate(Date date) {
-        return new SimpleDateFormat("dd 'Th' M, yyyy", new Locale("vi")).format(date);
+            @Override
+            public void onFailure(Call<HomeResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Không thể kết nối Server: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
-     * Tạo danh sách bài viết mẫu — thay bằng dữ liệu từ Firebase/API sau.
+     * Đổ trực tiếp dữ liệu Online từ Backend vào bộ 3 vùng UI
      */
-    private List<Articles> getSampleArticles() {
-        List<Articles> articles = new ArrayList<>();
+    private void applyHomeData(HomeResponse data) {
+        List<Articles> latestItems = mapHomeArticles(data.getLatest(), "LATEST");
+        List<Articles> trendingItems = mapHomeArticles(data.getTrending(), "TRENDING");
+        List<Articles> generalItems = mapHomeArticles(data.getFeatures(), "FEATURED");
 
-        articles.add(new Articles(
-                "1",
-                "GPT-5: Cái nhìn đầu tiên về Tác nhân Tự trị và Suy luận",
-                "Mô hình mới của OpenAI hứa hẹn khả năng suy luận vượt trội, mở ra kỷ nguyên mới cho AI tự động hoạt động và ra quyết định.",
-                "Bối cảnh năng suất hiện đại đã trải qua sự biến đổi lớn trong mười hai tháng qua. Khi các mô hình ngôn ngữ lớn chuyển từ những thử nghiệm mới lạ sang cơ sở hạ tầng cốt lõi, cách chúng ta nhìn nhận \"công việc\" đang thay đổi căn bản.\n\nKhông chỉ còn là về đầu ra, mà là sự phối hợp giữa trực giác con người và độ chính xác của thuật toán. Trong phân tích sâu này, chúng ta khám phá các ngành cụ thể nơi những thay đổi này rõ rệt nhất.\n\nTừ kỹ thuật phần mềm đến nghiên cứu pháp lý, việc tích hợp AI tạo sinh không chỉ tăng tốc các nhiệm vụ mà còn cho phép khám phá các không gian vấn đề phức tạp trước đây được coi là quá tốn tài nguyên để giải quyết.\n\nMột trong những thay đổi sâu sắc nhất được thấy trong lĩnh vực truyền thông trực quan. Các nhà thiết kế đang tận dụng mô hình khuếch tán để lặp qua hàng ngàn khái niệm trong thời gian trước đây cần để phác thảo một wireframe.",
-                "AI",
-                "TechByte",
-                "Nguyễn Minh Trí",
-                "",
-                "10 Th5, 2026",
-                System.currentTimeMillis()
-        ));
+        featuredAdapter.setItems(latestItems);
+        favoritesAdapter.setItems(trendingItems);
+        articlesAdapter.setItems(generalItems);
+    }
 
-        articles.add(new Articles(
-                "2",
-                "Máy tính lượng tử đe dọa các giao thức mã hóa tiêu chuẩn vào năm 2026",
-                "Các chuyên gia cảnh báo rằng sự tiến bộ nhanh chóng trong điện toán lượng tử có thể phá vỡ các hệ thống bảo mật hiện tại sớm hơn dự kiến.",
-                "Điện toán lượng tử đang tiến bước mạnh mẽ, và các chuyên gia an ninh mạng đang lo ngại. Khả năng của máy tính lượng tử trong việc phá vỡ các thuật toán mã hóa hiện tại đang trở thành mối đe dọa thực sự.\n\nRSA và ECC - hai trụ cột của bảo mật internet hiện đại - có thể bị phá vỡ bởi thuật toán Shor chạy trên máy tính lượng tử đủ mạnh. Điều này có nghĩa là mọi giao dịch ngân hàng, email bảo mật, và thông tin cá nhân đều có nguy cơ.\n\nNIST đã công bố các tiêu chuẩn mã hóa hậu lượng tử mới, nhưng việc triển khai trên quy mô lớn vẫn còn chậm. Các tổ chức được khuyến cáo bắt đầu lên kế hoạch chuyển đổi ngay từ bây giờ.",
-                "Bảo mật",
-                "CyberNews",
-                "Trần Anh Khoa",
-                "",
-                "09 Th5, 2026",
-                System.currentTimeMillis() - 86400000
-        ));
+    /**
+     * Ánh xạ các trường từ DTO mạng sang thực thể UI và lấy ID số nguyên thật gửi từ Backend
+     */
+    private List<Articles> mapHomeArticles(List<HomeArticle> items, String defaultCategory) {
+        List<Articles> mapped = new ArrayList<>();
+        if (items == null) return mapped;
 
-        articles.add(new Articles(
-                "3",
-                "Cuộc đua 2nm: Tại sao Đài Loan vẫn là trung tâm của thế giới phần cứng",
-                "TSMC tiếp tục dẫn đầu cuộc đua sản xuất chip tiên tiến, khẳng định vị thế không thể thay thế trong chuỗi cung ứng bán dẫn toàn cầu.",
-                "TSMC vừa công bố tiến độ sản xuất chip 2nm đúng kế hoạch, với các lô sản phẩm đầu tiên dự kiến vào Q3 2026. Đây là bước nhảy vọt đáng kể so với quy trình 3nm hiện tại.\n\nChip 2nm hứa hẹn tăng 15% hiệu năng và giảm 30% tiêu thụ điện so với thế hệ trước. Apple, Qualcomm và NVIDIA đều đã đặt hàng cho các sản phẩm sử dụng quy trình mới.\n\nDù Intel và Samsung đang nỗ lực bắt kịp, khoảng cách công nghệ vẫn còn lớn. Địa chính trị và rủi ro chuỗi cung ứng tiếp tục là yếu tố quan trọng.",
-                "Phần cứng",
-                "ChipWorld",
-                "Lê Hoàng Nam",
-                "",
-                "08 Th5, 2026",
-                System.currentTimeMillis() - 172800000
-        ));
+        for (HomeArticle item : items) {
+            if (item == null) continue;
 
-        articles.add(new Articles(
-                "4",
-                "Rust chính thức tiếp quản nhân Linux. Đây là lý do tại sao.",
-                "Ngôn ngữ lập trình Rust đang dần thay thế C trong các module mới của nhân Linux, mang lại sự an toàn bộ nhớ mà không hy sinh hiệu năng.",
-                "Linus Torvalds vừa phê duyệt đợt merge lớn nhất của mã Rust vào nhân Linux, đánh dấu bước ngoặt lịch sử cho dự án. Hơn 20 module mới đã được viết hoàn toàn bằng Rust.\n\nRust mang lại an toàn bộ nhớ tại thời điểm biên dịch mà không cần garbage collector, giải quyết hàng loạt lỗ hổng bảo mật đã tồn tại hàng thập kỷ trong mã C truyền thống.\n\nCộng đồng phát triển đang phản ứng tích cực. Nhiều maintainer đã bắt đầu chuyển đổi các driver quan trọng sang Rust, và các khóa học Rust cho kernel dev đang được mở rộng.",
-                "Lập trình",
-                "DevBlog",
-                "Phạm Quốc Huy",
-                "",
-                "07 Th5, 2026",
-                System.currentTimeMillis() - 259200000
-        ));
+            String title = item.getTitle() != null ? item.getTitle() : "(Không có tiêu đề)";
+            String source = item.getSource() != null ? item.getSource() : "TechByte";
+            String time = item.getTime() != null ? item.getTime() : "Vừa xong";
+            String thumbnail = item.getThumbnail() != null ? item.getThumbnail() : "";
+            String summary = source + " • " + time;
 
-        articles.add(new Articles(
-                "5",
-                "Silicon Valley chuẩn bị cho kỷ nguyên hậu SaaS như thế nào",
-                "Một phân tích sâu về sự chuyển đổi kinh tế đơn vị của các startup AI và sự quay trở lại với tích hợp dọc.",
-                "Mô hình SaaS truyền thống đang bị thách thức khi AI có thể tự động hóa toàn bộ quy trình mà trước đây cần phần mềm chuyên dụng. Các startup đang chuyển sang mô hình 'AI-as-a-Service' với cấu trúc giá hoàn toàn khác.\n\nThay vì tính phí theo người dùng, các công ty mới tính phí theo kết quả đầu ra. Điều này thay đổi cơ bản kinh tế đơn vị và buộc các công ty SaaS lớn phải tái cấu trúc.\n\nXu hướng tích hợp dọc cũng đang quay trở lại mạnh mẽ. Các công ty như Tesla, Apple đã chứng minh giá trị của việc kiểm soát toàn bộ stack.",
-                "Startup",
-                "VentureBeat",
-                "Hoàng Thị Mai",
-                "",
-                "06 Th5, 2026",
-                System.currentTimeMillis() - 345600000
-        ));
+            // 🔥 TRÍCH XUẤT ID THẬT: Lấy ID dạng int từ Backend chuyển sang String cấp cho lớp UI
+            String realId = String.valueOf(item.getId());
 
-        return articles;
+            mapped.add(new Articles(
+                    realId,
+                    title,
+                    summary,
+                    "",
+                    defaultCategory,
+                    source,
+                    "",
+                    thumbnail,
+                    time,
+                    System.currentTimeMillis()
+            ));
+        }
+        return mapped;
+    }
+
+    /**
+     * Xử lý Click bài viết: Đóng gói ID thật gửi thẳng sang màn hình chi tiết bài báo
+     */
+    private void onArticleSelected(Articles article) {
+        if (article == null) return;
+
+        Intent intent = new Intent(MainActivity.this, ArticleDetailActivity.class);
+        intent.putExtra("article_id", article.getId());
+        intent.putExtra("article_title", article.getTitle());
+        intent.putExtra("article_content", article.getContent());
+        intent.putExtra("article_summary", article.getSummary());
+        intent.putExtra("article_source", article.getSource());
+        intent.putExtra("article_author", article.getAuthor());
+        intent.putExtra("article_date", article.getPublishDate());
+        intent.putExtra("article_category", article.getCategory());
+        intent.putExtra("article_image", article.getImageUrl());
+
+        startActivity(intent);
     }
 
     private void showHomeUI() {
-        // Hiện Header và Views của Trang chủ
         activityMainBinding.layoutHeader.getRoot().setVisibility(View.VISIBLE);
         activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.VISIBLE);
-        // Ẩn vùng chứa Fragment cá nhân
         activityMainBinding.fragmentContainer.setVisibility(View.GONE);
-
     }
 
     private void showUserUI() {
-        // Ẩn Header và Views của Trang chủ
         activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
         activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
-        // Hiện vùng chứa Fragment cá nhân và thay thế bằng Home_UserFragment
         activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
         replaceFragment(new Home_user());
     }
@@ -334,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(android.os.Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Lưu lại tab hiện tại trước khi Activity bị huỷ (ví dụ vì đổi theme)
         if (activityMainBinding != null && activityMainBinding.layoutBottomNav != null) {
             outState.putInt("selected_tab", activityMainBinding.layoutBottomNav.homeBottomNavigation.getSelectedItemId());
         }

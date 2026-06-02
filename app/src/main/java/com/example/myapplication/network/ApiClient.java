@@ -38,5 +38,12 @@ public class ApiClient {
     public static CommentApi getCommentApi() {
         return getRetrofit().create(CommentApi.class);
     }
+
+    public static HomeApi getHomeApi() {
+        return getRetrofit().create(HomeApi.class);
+    }
+    public static ArticleApi getArticleApi() {
+        return getRetrofit().create(ArticleApi.class);
+    }
 }
 
