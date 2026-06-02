@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.data.ApiResponse;
+import com.example.myapplication.data.article.ArticleDto;
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.network.ApiClient;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,6 +29,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,7 +136,56 @@ public class MainActivity extends AppCompatActivity {
         articleList = new ArrayList<>();
         articleAdapter = new ArticleAdapter(this, articleList);
         recyclerView.setAdapter(articleAdapter);
-        loadArticlesFromFirestore();
+        loadArticlesFromBackend();
+    }
+
+    private void loadArticlesFromBackend() {
+        ApiClient.getArticleApi().getArticles(1, 20).enqueue(new Callback<ApiResponse<List<ArticleDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<ArticleDto>>> call, Response<ApiResponse<List<ArticleDto>>> response) {
+                ApiResponse<List<ArticleDto>> body = response.body();
+                if (!response.isSuccessful() || body == null || !body.isSuccess() || body.getData() == null) {
+                    articleList.clear();
+                    articleAdapter.notifyDataSetChanged();
+                    return;
+                }
+
+                List<Articles> loadedArticles = new ArrayList<>();
+                for (ArticleDto dto : body.getData()) {
+                    loadedArticles.add(mapArticleDto(dto));
+                }
+
+                articleList.clear();
+                articleList.addAll(loadedArticles);
+                articleAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<ArticleDto>>> call, Throwable t) {
+                articleList.clear();
+                articleAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private Articles mapArticleDto(ArticleDto dto) {
+        Articles article = new Articles();
+        article.setId(valueOrDefault(dto.getId(), ""));
+        article.setTitle(valueOrDefault(dto.getTitle(), ""));
+        article.setSlug(valueOrDefault(dto.getSlug(), ""));
+        article.setSummary(valueOrDefault(dto.getSummary(), ""));
+        article.setContent(valueOrDefault(dto.getContent(), article.getSummary()));
+        article.setSource(valueOrDefault(dto.getSource(), "TechByte"));
+        article.setOriginalUrl(valueOrDefault(dto.getSource(), ""));
+        article.setImageUrl(valueOrDefault(dto.getThumbnailUrl(), ""));
+        article.setPublishDate(valueOrDefault(dto.getTime(), ""));
+        article.setCategory("Tin tuc");
+        article.setAuthor("TechByte");
+        return article;
+    }
+
+    private String valueOrDefault(String value, String fallback) {
+        return value != null && !value.isEmpty() ? value : fallback;
     }
 
     private void loadArticlesFromFirestore() {

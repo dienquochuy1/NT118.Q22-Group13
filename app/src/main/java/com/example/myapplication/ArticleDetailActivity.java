@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.auth.SessionStore;
 import com.example.myapplication.data.ApiResponse;
+import com.example.myapplication.data.article.ArticleDto;
 import com.example.myapplication.data.comment.CommentCreateRequest;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.network.ApiClient;
@@ -152,7 +153,53 @@ public class ArticleDetailActivity extends AppCompatActivity {
         });
 
         btnSendComment.setOnClickListener(v -> submitComment());
+        loadArticleDetail(tvTitle, tvAuthor, tvDate, tvContent, imgHero);
         loadComments();
+    }
+
+    private void loadArticleDetail(TextView tvTitle, TextView tvAuthor, TextView tvDate, TextView tvContent, ImageView imgHero) {
+        if (articleId <= 0) {
+            return;
+        }
+
+        ApiClient.getArticleApi().getArticle(articleId).enqueue(new Callback<ApiResponse<ArticleDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ArticleDto>> call, Response<ApiResponse<ArticleDto>> response) {
+                ApiResponse<ArticleDto> body = response.body();
+                if (!response.isSuccessful() || body == null || !body.isSuccess() || body.getData() == null) {
+                    return;
+                }
+
+                ArticleDto article = body.getData();
+                if (article.getTitle() != null && !article.getTitle().isEmpty()) {
+                    tvTitle.setText(article.getTitle());
+                }
+                if (article.getSource() != null && !article.getSource().isEmpty()) {
+                    tvAuthor.setText(article.getSource());
+                }
+                if (article.getTime() != null && !article.getTime().isEmpty()) {
+                    tvDate.setText(article.getTime());
+                }
+                if (article.getContent() != null && !article.getContent().isEmpty()) {
+                    tvContent.setText(article.getContent());
+                } else if (article.getSummary() != null && !article.getSummary().isEmpty()) {
+                    tvContent.setText(article.getSummary());
+                }
+                if (article.getThumbnailUrl() != null && !article.getThumbnailUrl().isEmpty()) {
+                    com.bumptech.glide.Glide.with(ArticleDetailActivity.this)
+                            .load(article.getThumbnailUrl())
+                            .placeholder(R.drawable.bg_article_image_placeholder)
+                            .error(R.drawable.bg_article_image_placeholder)
+                            .centerCrop()
+                            .into(imgHero);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ArticleDto>> call, Throwable t) {
+                // Keep the list payload already shown on screen.
+            }
+        });
     }
 
     private int parseArticleId(String value) {
