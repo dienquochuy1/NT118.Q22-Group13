@@ -83,11 +83,12 @@
 
     <!-- Scrollable Content -->
     <ScrollView
+        android:id="@+id/scroll_article_detail"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/divider_top"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layout_comment_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -351,7 +352,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Binh luan"
+                    android:text="Bình luận"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp" />
 
@@ -360,7 +361,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Dang tai binh luan..."
+                    android:text="Đang tải bình luận..."
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
@@ -371,40 +372,6 @@
                     android:layout_marginTop="8dp"
                     android:nestedScrollingEnabled="false" />
 
-                <LinearLayout
-                    android:id="@+id/layout_comment_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/et_comment_content"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/divider_color"
-                        android:hint="Viet binh luan..."
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:maxLines="3"
-                        android:paddingHorizontal="12dp"
-                        android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary"
-                        android:textSize="14sp" />
-
-                    <Button
-                        android:id="@+id/btn_send_comment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
-                        android:layout_marginStart="10dp"
-                        android:backgroundTint="@color/primary_action"
-                        android:minWidth="72dp"
-                        android:text="Gui"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
                 <!-- Bottom spacing -->
                 <View
                     android:layout_width="match_parent"
@@ -413,5 +380,48 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_comment_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_dark"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/et_comment_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_comment_input"
+            android:gravity="top|start"
+            android:hint="Viết bình luận..."
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="text|textMultiLine|textCapSentences|textAutoCorrect"
+            android:maxLines="4"
+            android:minHeight="48dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_send_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="@color/primary_action"
+            android:minWidth="72dp"
+            android:text="Gửi"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +63,21 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_article_detail), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+            View commentInput = v.findViewById(R.id.layout_comment_input);
+            int keyboardOffset = Math.max(0, ime.bottom - systemBars.bottom);
+            int inputBottomPadding = (int) (10 * getResources().getDisplayMetrics().density + 0.5f);
+
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            if (commentInput != null) {
+                commentInput.setPadding(
+                        commentInput.getPaddingLeft(),
+                        commentInput.getPaddingTop(),
+                        commentInput.getPaddingRight(),
+                        inputBottomPadding + systemBars.bottom
+                );
+                commentInput.setTranslationY(-keyboardOffset);
+            }
             return insets;
         });
 
@@ -76,6 +91,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         TextView tvAuthor = findViewById(R.id.tv_detail_author);
         TextView tvDate = findViewById(R.id.tv_detail_date);
         TextView tvContent = findViewById(R.id.tv_detail_content);
+        ScrollView scrollArticleDetail = findViewById(R.id.scroll_article_detail);
         RecyclerView recyclerComments = findViewById(R.id.recycler_comments);
         tvCommentsStatus = findViewById(R.id.tv_comments_status);
         etCommentContent = findViewById(R.id.et_comment_content);
@@ -153,6 +169,11 @@ public class ArticleDetailActivity extends AppCompatActivity {
         });
 
         btnSendComment.setOnClickListener(v -> submitComment());
+        etCommentContent.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                scrollArticleDetail.postDelayed(() -> scrollArticleDetail.fullScroll(View.FOCUS_DOWN), 250);
+            }
+        });
         loadArticleDetail(tvTitle, tvAuthor, tvDate, tvContent, imgHero);
         loadComments();
     }
@@ -215,20 +236,20 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     private void loadComments() {
         if (articleId <= 0) {
-            tvCommentsStatus.setText("Khong tim thay ma bai viet de tai binh luan.");
+            tvCommentsStatus.setText("Không tìm thấy mã bài viết để tải bình luận.");
             btnSendComment.setEnabled(false);
             return;
         }
 
         tvCommentsStatus.setVisibility(View.VISIBLE);
-        tvCommentsStatus.setText("Dang tai binh luan...");
+        tvCommentsStatus.setText("Đang tải bình luận...");
 
         ApiClient.getCommentApi().getComments(articleId, 1, 20).enqueue(new Callback<ApiResponse<List<CommentDto>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<CommentDto>>> call, Response<ApiResponse<List<CommentDto>>> response) {
                 ApiResponse<List<CommentDto>> body = response.body();
                 if (!response.isSuccessful() || body == null || !body.isSuccess()) {
-                    tvCommentsStatus.setText("Khong the tai binh luan.");
+                    tvCommentsStatus.setText("Không thể tải bình luận.");
                     return;
                 }
 
@@ -236,7 +257,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 commentAdapter.submitList(comments);
                 if (comments == null || comments.isEmpty()) {
                     tvCommentsStatus.setVisibility(View.VISIBLE);
-                    tvCommentsStatus.setText("Chua co binh luan.");
+                    tvCommentsStatus.setText("Chưa có bình luận.");
                 } else {
                     tvCommentsStatus.setVisibility(View.GONE);
                 }
@@ -245,25 +266,25 @@ public class ArticleDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ApiResponse<List<CommentDto>>> call, Throwable t) {
                 tvCommentsStatus.setVisibility(View.VISIBLE);
-                tvCommentsStatus.setText("Khong the ket noi de tai binh luan.");
+                tvCommentsStatus.setText("Không thể kết nối để tải bình luận.");
             }
         });
     }
 
     private void submitComment() {
         if (articleId <= 0) {
-            Toast.makeText(this, "Khong tim thay bai viet.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không tìm thấy bài viết.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!sessionStore.isLoggedIn()) {
-            Toast.makeText(this, "Vui long dang nhap de binh luan.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập để bình luận.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String content = etCommentContent.getText().toString().trim();
         if (content.length() < 2) {
-            etCommentContent.setError("Binh luan qua ngan");
+            etCommentContent.setError("Bình luận quá ngắn");
             return;
         }
 
@@ -278,21 +299,21 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 ApiResponse<CommentDto> body = response.body();
                 if (!response.isSuccessful() || body == null || !body.isSuccess()) {
                     String message = response.code() == 404
-                            ? "Bai viet chua dong bo voi he thong binh luan."
-                            : "Khong gui duoc binh luan.";
+                            ? "Bài viết chưa đồng bộ với hệ thống bình luận."
+                            : "Không gửi được bình luận.";
                     Toast.makeText(ArticleDetailActivity.this, message, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 etCommentContent.setText("");
-                Toast.makeText(ArticleDetailActivity.this, "Da gui binh luan.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ArticleDetailActivity.this, "Đã gửi bình luận.", Toast.LENGTH_SHORT).show();
                 loadComments();
             }
 
             @Override
             public void onFailure(Call<ApiResponse<CommentDto>> call, Throwable t) {
                 btnSendComment.setEnabled(true);
-                Toast.makeText(ArticleDetailActivity.this, "Khong the ket noi may chu.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ArticleDetailActivity.this, "Không thể kết nối máy chủ.", Toast.LENGTH_SHORT).show();
             }
         });
     }
