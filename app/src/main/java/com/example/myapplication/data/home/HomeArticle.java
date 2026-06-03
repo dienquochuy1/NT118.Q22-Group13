@@ -9,6 +9,12 @@ public class HomeArticle {
     @SerializedName("title")
     private String title;
 
+    @SerializedName("summary")
+    private String summary;
+
+    @SerializedName("content")
+    private String content;
+
     @SerializedName("source")
     private String source;
 
@@ -24,6 +30,12 @@ public class HomeArticle {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+
+    public String getSummary() { return summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
     public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }

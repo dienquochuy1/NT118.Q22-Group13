@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateHeaderDate();
         setupHomeLists();
+        setupSearch();
 
         com.google.android.material.bottomnavigation.BottomNavigationView navView = findViewById(R.id.home_bottom_navigation);
         if(navView != null){
@@ -117,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         viewPagerFeatured = findViewById(R.id.vp_featured);
         rvFavorites = findViewById(R.id.rv_favorites);
         rvGeneral = findViewById(R.id.rv_general);
-
         featuredAdapter = new FeaturedAdapter(this, new ArrayList<>(), this::onArticleSelected);
         favoritesAdapter = new FavoritesAdapter(this, new ArrayList<>(), this::onArticleSelected);
         articlesAdapter = new ArticlesAdapter(this, new ArrayList<>(), this::onArticleSelected);
@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
             String source = item.getSource() != null ? item.getSource() : "TechByte";
             String time = item.getTime() != null ? item.getTime() : "Vừa xong";
             String thumbnail = item.getThumbnail() != null ? item.getThumbnail() : "";
+            String content = item.getContent() != null ? item.getContent() : "";
             String summary = source + " • " + time;
 
             // 🔥 TRÍCH XUẤT ID THẬT: Lấy ID dạng int từ Backend chuyển sang String cấp cho lớp UI
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                     realId,
                     title,
                     summary,
-                    "",
+                    content,
                     defaultCategory,
                     source,
                     "",
@@ -213,6 +214,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Xử lý Click bài viết: Đóng gói ID thật gửi thẳng sang màn hình chi tiết bài báo
+     */
+    private void setupSearch() {
+        View btnSearch = findViewById(R.id.btn_search);
+        if (btnSearch == null) return;
+
+        btnSearch.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SearchActivity.class)));
+    }
+
+    /**
+     * Xu ly click bai viet va mo man hinh chi tiet.
      */
     private void onArticleSelected(Articles article) {
         if (article == null) return;

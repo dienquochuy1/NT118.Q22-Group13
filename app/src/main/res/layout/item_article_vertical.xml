@@ -58,11 +58,8 @@
             <TextView
                 android:id="@+id/tv_title_vertical"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="2"
                 android:text="IBM chế tạo thành công Chip Siêu Dẫn lượng tử mới"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
@@ -75,13 +72,18 @@
 
                 <TextView
                     android:id="@+id/tv_source_vertical"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@id/layout_article_actions"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="SciTech"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
 
                 <LinearLayout
+                    android:id="@+id/layout_article_actions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
