@@ -39,7 +39,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
         String name = user != null && user.getName() != null && !user.getName().isEmpty()
                 ? user.getName()
-                : "Nguoi dung";
+                : "Người dùng";
 
         holder.tvUserName.setText(name);
         holder.tvContent.setText(comment.getContent() != null ? comment.getContent() : "");

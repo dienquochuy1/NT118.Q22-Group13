@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -20,6 +21,7 @@ import com.example.myapplication.auth.SessionStore;
 import com.example.myapplication.data.ApiResponse;
 import com.example.myapplication.data.ArticleDetailResponse;
 import com.example.myapplication.data.ArticleDetailData;
+import com.example.myapplication.data.comment.CommentCreateRequest;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.network.ApiClient;
 
@@ -59,7 +61,21 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_article_detail), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+            View commentInput = v.findViewById(R.id.layout_comment_input);
+            int keyboardOffset = Math.max(0, ime.bottom - systemBars.bottom);
+            int inputBottomPadding = (int) (10 * getResources().getDisplayMetrics().density + 0.5f);
+
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            if (commentInput != null) {
+                commentInput.setPadding(
+                        commentInput.getPaddingLeft(),
+                        commentInput.getPaddingTop(),
+                        commentInput.getPaddingRight(),
+                        inputBottomPadding + systemBars.bottom
+                );
+                commentInput.setTranslationY(-keyboardOffset);
+            }
             return insets;
         });
 
@@ -90,6 +106,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         // Nút Đóng (X) finish màn hình quay lại trang chủ
         btnBack.setOnClickListener(v -> finish());
+        btnSendComment.setOnClickListener(v -> submitComment());
 
         // Kích hoạt luồng gọi REST API lấy thông tin chi tiết từ Server Backend
         loadArticleDetailFromServer();
@@ -229,6 +246,53 @@ public class ArticleDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ApiResponse<List<CommentDto>>> call, Throwable t) {
                 tvCommentsStatus.setText("Lỗi kết nối bình luận.");
+            }
+        });
+    }
+
+    private void submitComment() {
+        if (articleId <= 0) {
+            Toast.makeText(this, "Không tìm thấy bài viết.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!sessionStore.isLoggedIn()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để bình luận.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String content = etCommentContent.getText().toString().trim();
+        if (content.length() < 2) {
+            etCommentContent.setError("Bình luận quá ngắn");
+            return;
+        }
+
+        btnSendComment.setEnabled(false);
+        String authorization = sessionStore.getTokenType() + " " + sessionStore.getAccessToken();
+        CommentCreateRequest request = new CommentCreateRequest(articleId, content);
+
+        ApiClient.getCommentApi().createComment(authorization, request).enqueue(new Callback<ApiResponse<CommentDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<CommentDto>> call, Response<ApiResponse<CommentDto>> response) {
+                btnSendComment.setEnabled(true);
+                ApiResponse<CommentDto> body = response.body();
+                if (!response.isSuccessful() || body == null || !body.isSuccess()) {
+                    String message = response.code() == 404
+                            ? "Bài viết chưa đồng bộ với hệ thống bình luận."
+                            : "Không gửi được bình luận.";
+                    Toast.makeText(ArticleDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                etCommentContent.setText("");
+                Toast.makeText(ArticleDetailActivity.this, "Đã gửi bình luận.", Toast.LENGTH_SHORT).show();
+                loadComments();
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<CommentDto>> call, Throwable t) {
+                btnSendComment.setEnabled(true);
+                Toast.makeText(ArticleDetailActivity.this, "Không thể kết nối máy chủ.", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -50,11 +50,12 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_article_detail"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/divider_top"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layout_comment_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -276,15 +277,16 @@
                     android:layout_marginBottom="12dp" />
 
                 <LinearLayout
-                    android:id="@+id/layout_comment_input"
+                    android:id="@+id/layout_comment_input_inline"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_marginBottom="16dp">
 
                     <EditText
-                        android:id="@+id/et_comment_content"
+                        android:id="@+id/et_comment_content_inline"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_weight="1"
@@ -296,7 +298,7 @@
                         android:textSize="13sp" />
 
                     <Button
-                        android:id="@+id/btn_send_comment"
+                        android:id="@+id/btn_send_comment_inline"
                         android:layout_width="70dp"
                         android:layout_height="45dp"
                         android:layout_marginStart="10dp"
@@ -317,4 +319,49 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_comment_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_dark"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/et_comment_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_comment_input"
+            android:gravity="top|start"
+            android:hint="Viết bình luận..."
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="text|textMultiLine|textCapSentences|textAutoCorrect"
+            android:maxLines="4"
+            android:minHeight="48dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_send_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="#27AE60"
+            android:minWidth="72dp"
+            android:text="Gửi"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="20dp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
