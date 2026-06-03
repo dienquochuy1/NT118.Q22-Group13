@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="• TIÊU ĐIỂM (MỚI NHẤT)"
-                android:textColor="#27AE60"
+                android:textColor="@color/primary_accent"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/inter_bold" />

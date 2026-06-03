@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="#161B22"
+    app:cardBackgroundColor="@color/surface_dark"
     app:cardCornerRadius="14dp"
     app:cardElevation="0dp"
-    app:strokeColor="#21262D"
+    app:strokeColor="@color/divider_color"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="QUANTUM"
-                    android:textColor="#27AE60"
+                    android:textColor="@color/primary_accent"
                     android:textSize="10sp"
                     android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:text="1 ngày trước"
-                    android:textColor="#8B949E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="10sp" />
             </RelativeLayout>
 
@@ -64,7 +64,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="IBM chế tạo thành công Chip Siêu Dẫn lượng tử mới"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="SciTech"
-                    android:textColor="#8B949E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
 
                 <LinearLayout
@@ -92,7 +92,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/heart_outline"
-                        app:tint="#8B949E" />
+                        app:tint="@color/text_secondary" />
 
                     <TextView
                         android:id="@+id/tv_likes_vertical"
@@ -101,7 +101,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="12dp"
                         android:text="540"
-                        android:textColor="#8B949E"
+                        android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
 
                     <ImageView
@@ -109,7 +109,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/bookmark_outline"
-                        app:tint="#8B949E" />
+                        app:tint="@color/text_secondary" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
