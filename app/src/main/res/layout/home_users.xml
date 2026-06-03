@@ -308,7 +308,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                    android:background="@color/divider_color" />
 
                     <!-- Giao diện Tối -->
                     <TextView
@@ -328,7 +328,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                    android:background="@color/divider_color" />
 
                     <!-- Notifications / Help -->
                     <TextView
@@ -348,7 +348,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                    android:background="@color/divider_color" />
 
                     <!-- Privacy & Security -->
                     <TextView
@@ -368,7 +368,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                    android:background="@color/divider_color" />
 
                     <!-- Log Out -->
                     <Button
