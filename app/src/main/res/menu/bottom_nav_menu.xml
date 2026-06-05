@@ -8,8 +8,7 @@
     <!-- Vô hiệu hóa nút Đã lưu -->
     <item android:title="Đã lưu"
         android:icon="@drawable/bookmark"
-        android:id="@+id/bottom_nav_bookmark"
-        android:enabled="false" />
+        android:id="@+id/bottom_nav_bookmark" />
 
     <item android:title="Cá nhân"
         android:icon="@drawable/user"

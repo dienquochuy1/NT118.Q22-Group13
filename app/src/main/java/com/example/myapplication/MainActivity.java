@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
                 if (id == R.id.bottom_nav_home) {
                     showHomeUI();
                     return true;
+                } else if (id == R.id.bottom_nav_bookmark) {
+                    showSavedUI();
+                    return true;
                 } else if (id == R.id.bottom_nav_user) {
                     showUserUI();
                     return true;
@@ -93,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             int selectedId = savedInstanceState.getInt("selected_tab", R.id.bottom_nav_home);
             if (selectedId == R.id.bottom_nav_user) {
+                activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
+                activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+                activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+            } else if (selectedId == R.id.bottom_nav_bookmark) {
                 activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
                 activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
                 activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
@@ -253,6 +260,13 @@ public class MainActivity extends AppCompatActivity {
         activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
         activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
         replaceFragment(new Home_user());
+    }
+
+    private void showSavedUI() {
+        activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
+        activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+        activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+        replaceFragment(new SavedArticlesFragment());
     }
 
     private void replaceFragment(Fragment fragment) {

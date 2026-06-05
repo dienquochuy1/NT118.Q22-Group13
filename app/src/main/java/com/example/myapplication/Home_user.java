@@ -131,9 +131,6 @@ public class Home_user extends Fragment {
             }
 
             cgInterests.removeAllViews();
-            tvStatArticles.setText("0");
-            tvStatSaved.setText("0");
-            tvStatInterests.setText("0");
 
             btnLogin.setVisibility(View.GONE);
             btnRegister.setVisibility(View.GONE);
@@ -145,9 +142,6 @@ public class Home_user extends Fragment {
             btnRegister.setVisibility(View.VISIBLE);
             btnLogout.setVisibility(View.GONE);
             iconUser.setImageResource(R.drawable.user);
-            tvStatArticles.setText("0");
-            tvStatSaved.setText("0");
-            tvStatInterests.setText("0");
             cgInterests.removeAllViews();
         }
     }

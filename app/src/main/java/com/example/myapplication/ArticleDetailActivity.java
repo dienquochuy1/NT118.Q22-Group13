@@ -21,6 +21,7 @@ import com.example.myapplication.auth.SessionStore;
 import com.example.myapplication.data.ApiResponse;
 import com.example.myapplication.data.ArticleDetailResponse;
 import com.example.myapplication.data.ArticleDetailData;
+import com.example.myapplication.data.article.ArticleActionState;
 import com.example.myapplication.data.comment.CommentCreateRequest;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.network.ApiClient;
@@ -38,7 +39,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private RelatedArticlesAdapter relatedAdapter;
 
     // Khai báo View theo file XML mới thiết kế
-    private ImageView imgHero, btnBookmark, btnShare, btnBack;
+    private ImageView imgHero, btnLike, btnBookmark, btnShare, btnBack;
     private TextView tvCategory, tvTitle, tvAuthor, tvDate, tvSummary, tvContent, tvCommentsStatus, tvCommentsTitle;
     private EditText etCommentContent;
     private Button btnSendComment;
@@ -106,6 +107,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         // Nút Đóng (X) finish màn hình quay lại trang chủ
         btnBack.setOnClickListener(v -> finish());
+        btnLike.setOnClickListener(v -> toggleLike());
+        btnBookmark.setOnClickListener(v -> toggleBookmark());
         btnSendComment.setOnClickListener(v -> submitComment());
 
         // Kích hoạt luồng gọi REST API lấy thông tin chi tiết từ Server Backend
@@ -119,6 +122,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tv_detail_title);
         tvAuthor = findViewById(R.id.tv_detail_author);
         tvDate = findViewById(R.id.tv_detail_date);
+        btnLike = findViewById(R.id.btn_like_detail);
         btnBookmark = findViewById(R.id.btn_bookmark_detail);
         btnShare = findViewById(R.id.btn_share);
         tvSummary = findViewById(R.id.tv_detail_summary);
@@ -133,9 +137,91 @@ public class ArticleDetailActivity extends AppCompatActivity {
         sessionStore = new SessionStore(this);
     }
 
-    /**
-     * Thực hiện bắn lệnh gọi REST API lên Backend lấy dữ liệu Aiven Cloud
-     */
+    private String getAuthorizationHeader() {
+        return sessionStore.getTokenType() + " " + sessionStore.getAccessToken();
+    }
+
+    private boolean canSubmitArticleAction() {
+        if (articleId <= 0) {
+            Toast.makeText(this, "Không tìm thấy bài viết.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!sessionStore.isLoggedIn()) {
+            Toast.makeText(this, "Vui lòng đăng nhập để sử dụng chức năng này.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private String getApiErrorMessage(Response<ApiResponse<ArticleActionState>> response, String fallback) {
+        ApiResponse<ArticleActionState> body = response.body();
+        if (body != null && body.getMessage() != null && !body.getMessage().trim().isEmpty()) {
+            return body.getMessage();
+        }
+
+        return fallback + " Mã lỗi: " + response.code();
+    }
+
+    private void toggleLike() {
+        if (!canSubmitArticleAction()) return;
+
+        btnLike.setEnabled(false);
+        ApiClient.getArticleActionApi().toggleLike(getAuthorizationHeader(), articleId)
+                .enqueue(new Callback<ApiResponse<ArticleActionState>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<ArticleActionState>> call, Response<ApiResponse<ArticleActionState>> response) {
+                        btnLike.setEnabled(true);
+                        ApiResponse<ArticleActionState> body = response.body();
+                        if (!response.isSuccessful() || body == null || !body.isSuccess()) {
+                            Toast.makeText(ArticleDetailActivity.this, getApiErrorMessage(response, "Không cập nhật được trạng thái thích."), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ArticleActionState state = body.getData();
+                        boolean liked = state != null && Boolean.TRUE.equals(state.isLiked());
+                        btnLike.setImageResource(liked ? R.drawable.heart_filled : R.drawable.heart_outline);
+                        Toast.makeText(ArticleDetailActivity.this, liked ? "Đã thích bài viết." : "Đã bỏ thích bài viết.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<ArticleActionState>> call, Throwable t) {
+                        btnLike.setEnabled(true);
+                        Toast.makeText(ArticleDetailActivity.this, "Không thể kết nối máy chủ.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void toggleBookmark() {
+        if (!canSubmitArticleAction()) return;
+
+        btnBookmark.setEnabled(false);
+        ApiClient.getArticleActionApi().toggleBookmark(getAuthorizationHeader(), articleId)
+                .enqueue(new Callback<ApiResponse<ArticleActionState>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<ArticleActionState>> call, Response<ApiResponse<ArticleActionState>> response) {
+                        btnBookmark.setEnabled(true);
+                        ApiResponse<ArticleActionState> body = response.body();
+                        if (!response.isSuccessful() || body == null || !body.isSuccess()) {
+                            Toast.makeText(ArticleDetailActivity.this, getApiErrorMessage(response, "Không cập nhật được trạng thái lưu."), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ArticleActionState state = body.getData();
+                        boolean bookmarked = state != null && Boolean.TRUE.equals(state.isBookmarked());
+                        btnBookmark.setImageResource(bookmarked ? R.drawable.bookmark_filled : R.drawable.bookmark_outline);
+                        Toast.makeText(ArticleDetailActivity.this, bookmarked ? "Đã lưu bài viết." : "Đã bỏ lưu bài viết.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<ArticleActionState>> call, Throwable t) {
+                        btnBookmark.setEnabled(true);
+                        Toast.makeText(ArticleDetailActivity.this, "Không thể kết nối máy chủ.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void loadArticleDetailFromServer() {
         if (articleId <= 0) {
             tvTitle.setText("Lỗi mã bài viết không hợp lệ.");

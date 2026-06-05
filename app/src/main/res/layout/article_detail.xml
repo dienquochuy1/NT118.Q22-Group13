@@ -166,10 +166,18 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:id="@+id/btn_bookmark_detail"
+                            android:id="@+id/btn_like_detail"
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/heart_outline"
+                            app:tint="@color/text_secondary" />
+
+                        <ImageView
+                            android:id="@+id/btn_bookmark_detail"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginStart="16dp"
+                            android:src="@drawable/bookmark_outline"
                             app:tint="@color/text_secondary" />
 
                         <ImageView
@@ -177,7 +185,7 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:layout_marginStart="16dp"
-                            android:src="@drawable/bookmark_outline"
+                            android:src="@drawable/ic_share"
                             app:tint="@color/text_secondary" />
                     </LinearLayout>
                 </RelativeLayout>
