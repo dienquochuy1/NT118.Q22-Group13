@@ -16,6 +16,9 @@ public class ArticleDetailData {
     @SerializedName("summary_text")
     private String summaryText; // Chứa nội dung Tóm tắt bằng AI
 
+    @SerializedName("sum_voice_link")
+    private String sumVoiceLink;
+
     @SerializedName("thumbnail_url")
     private String thumbnailUrl;
 
@@ -39,6 +42,7 @@ public class ArticleDetailData {
     public String getTitle() { return title; }
     public String getSlug() { return slug; }
     public String getSummaryText() { return summaryText; }
+    public String getSumVoiceLink() { return sumVoiceLink; }
     public String getThumbnailUrl() { return thumbnailUrl; }
     public String getSource() { return source; }
     public String getContent() { return content; }

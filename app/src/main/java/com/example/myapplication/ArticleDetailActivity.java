@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +45,12 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private TextView tvCategory, tvTitle, tvAuthor, tvDate, tvSummary, tvContent, tvCommentsStatus, tvCommentsTitle;
     private EditText etCommentContent;
     private Button btnSendComment;
+    private LinearLayout btnTts;
     private RecyclerView recyclerComments, rvRelatedArticles;
     private SessionStore sessionStore;
+    private MediaPlayer summaryVoicePlayer;
+    private boolean isPreparingSummaryVoice;
+    private String summaryVoiceLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +116,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         btnLike.setOnClickListener(v -> toggleLike());
         btnBookmark.setOnClickListener(v -> toggleBookmark());
         btnSendComment.setOnClickListener(v -> submitComment());
+        btnTts.setOnClickListener(v -> toggleSummaryVoice());
 
         // Kích hoạt luồng gọi REST API lấy thông tin chi tiết từ Server Backend
         loadArticleDetailFromServer();
@@ -125,6 +132,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         btnLike = findViewById(R.id.btn_like_detail);
         btnBookmark = findViewById(R.id.btn_bookmark_detail);
         btnShare = findViewById(R.id.btn_share);
+        btnTts = findViewById(R.id.btn_tts);
         tvSummary = findViewById(R.id.tv_detail_summary);
         tvContent = findViewById(R.id.tv_detail_content);
 
@@ -257,6 +265,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         tvTitle.setText(data.getTitle());
         tvContent.setText(data.getContent());
+        summaryVoiceLink = data.getSumVoiceLink();
 
         // Đổ dữ liệu tóm tắt AI (Gemma) vào Card viền xanh
         if (data.getSummaryText() != null && !data.getSummaryText().isEmpty()) {
@@ -294,6 +303,56 @@ public class ArticleDetailActivity extends AppCompatActivity {
         loadComments();
     }
 
+    private void toggleSummaryVoice() {
+        if (summaryVoicePlayer != null || isPreparingSummaryVoice) {
+            stopSummaryVoice();
+            return;
+        }
+
+        if (summaryVoiceLink == null || summaryVoiceLink.trim().isEmpty()) {
+            Toast.makeText(this, "Bai viet chua co audio.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            isPreparingSummaryVoice = true;
+            summaryVoicePlayer = new MediaPlayer();
+            summaryVoicePlayer.setDataSource(summaryVoiceLink.trim());
+            summaryVoicePlayer.setOnPreparedListener(player -> {
+                isPreparingSummaryVoice = false;
+                player.start();
+            });
+            summaryVoicePlayer.setOnCompletionListener(player -> stopSummaryVoice());
+            summaryVoicePlayer.setOnErrorListener((player, what, extra) -> {
+                stopSummaryVoice();
+                Toast.makeText(this, "Khong phat duoc audio.", Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            summaryVoicePlayer.prepareAsync();
+            Toast.makeText(this, "Dang tai audio...", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            stopSummaryVoice();
+            Toast.makeText(this, "Khong phat duoc audio.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopSummaryVoice() {
+        isPreparingSummaryVoice = false;
+        if (summaryVoicePlayer == null) {
+            return;
+        }
+
+        try {
+            if (summaryVoicePlayer.isPlaying()) {
+                summaryVoicePlayer.stop();
+            }
+        } catch (IllegalStateException ignored) {
+            // MediaPlayer can be between async states; release below is still valid.
+        }
+        summaryVoicePlayer.release();
+        summaryVoicePlayer = null;
+    }
+
     private int parseArticleId(String value) {
         if (value == null || value.trim().isEmpty()) return -1;
         try {
@@ -301,6 +360,12 @@ public class ArticleDetailActivity extends AppCompatActivity {
         } catch (NumberFormatException ignored) {
             return -1;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopSummaryVoice();
+        super.onDestroy();
     }
 
     // Giữ nguyên hệ thống quản lý Comment cũ tương tác với database của em
