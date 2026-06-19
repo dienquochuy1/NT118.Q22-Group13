@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,13 +26,18 @@ import com.google.android.gms.tasks.Task;
 import com.example.myapplication.auth.AuthCallback;
 import com.example.myapplication.auth.AuthErrorInfo;
 import com.example.myapplication.auth.AuthRepository;
+import com.example.myapplication.auth.GoogleLoginProfile;
 import com.example.myapplication.data.auth.AuthData;
-// Firebase calls are being migrated to backend API. Firebase SDK usages in this file are disabled.
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class Login extends Fragment {
 
     private EditText etEmail, etPassword;
     private AuthRepository authRepository;
+    private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
 
@@ -73,6 +77,7 @@ public class Login extends Fragment {
 
         // Use backend AuthRepository instead of FirebaseAuth
         authRepository = new AuthRepository(requireContext());
+        firebaseAuth = FirebaseAuth.getInstance();
 
         etEmail = view.findViewById(R.id.et_email);
         etPassword = view.findViewById(R.id.et_password);
@@ -96,8 +101,7 @@ public class Login extends Fragment {
                 .addToBackStack(null)
                 .commit());
 
-        // Google Sign-In temporarily disabled (kept in code for future re-enable)
-        btnGoogle.setOnClickListener(v -> Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show());
+        btnGoogle.setOnClickListener(v -> startGoogleSignIn());
         btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         return view;
@@ -129,15 +133,53 @@ public class Login extends Fragment {
     }
 
     private void startGoogleSignIn() {
-        // No-op while Google Sign-In is disabled. Keep method for future re-enable.
-        Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show();
+        if (googleSignInClient == null) {
+            Toast.makeText(getActivity(), "Chua cau hinh Google Sign-In.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        // Google sign-in flow disabled. If you later want to support social login via backend,
-        // implement sending the Google idToken to your backend and exchange for an access token.
-        Log.i("Login", "firebaseAuthWithGoogle called but Google Sign-In is disabled");
-        Toast.makeText(getActivity(), "Google Sign-In tạm vô hiệu hóa.", Toast.LENGTH_SHORT).show();
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnSuccessListener(authResult -> {
+                    FirebaseUser user = authResult.getUser();
+                    if (user == null) {
+                        Toast.makeText(getActivity(), "Dang nhap Google that bai.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    user.getIdToken(false)
+                            .addOnSuccessListener(tokenResult -> {
+                                String idToken = tokenResult.getToken();
+                                if (TextUtils.isEmpty(idToken)) {
+                                    Toast.makeText(getActivity(), "Khong lay duoc token Firebase.", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+
+                                authRepository.getSessionStore().saveSession(GoogleLoginProfile.toAuthData(
+                                        user.getUid(),
+                                        user.getDisplayName(),
+                                        user.getEmail(),
+                                        idToken
+                                ));
+
+                                String username = GoogleLoginProfile.resolveUsername(user.getDisplayName(), user.getEmail());
+                                completeLogin(user.getUid(), username);
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(
+                                    getActivity(),
+                                    "Khong lay duoc token Firebase: " + e.getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show());
+                })
+                .addOnFailureListener(e -> Toast.makeText(
+                        getActivity(),
+                        "Dang nhap Google that bai: " + e.getMessage(),
+                        Toast.LENGTH_LONG
+                ).show());
     }
 
     private void loginUser() {
