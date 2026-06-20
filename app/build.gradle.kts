@@ -45,6 +45,18 @@ android {
             pickFirsts.add("META-INF/androidx.cardview_cardview.version")
         }
     }
+    sourceSets {
+        getByName("main") {
+            res.srcDirs(
+                "src/main/res/layout_auth",
+                "src/main/res/layout_home",
+                "src/main/res/layout_profile",
+                "src/main/res/layout_article",
+                "src/main/res/layout",
+                "src/main/res"
+            )
+        }
+    }
 
 }
 

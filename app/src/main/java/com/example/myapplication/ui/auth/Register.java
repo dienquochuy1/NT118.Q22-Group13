@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.auth;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,10 +12,12 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.R;
 import com.example.myapplication.auth.AuthCallback;
 import com.example.myapplication.auth.AuthErrorInfo;
 import com.example.myapplication.auth.AuthRepository;
 import com.example.myapplication.data.auth.AuthData;
+import com.example.myapplication.ui.profile.Successful_Nofitication;
 
 public class Register extends Fragment {
     private EditText etUsername, etEmail, etPassword;

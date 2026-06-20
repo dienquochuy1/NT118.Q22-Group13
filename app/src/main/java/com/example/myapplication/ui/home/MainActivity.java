@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +17,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.myapplication.ui.adapter.ArticlesAdapter;
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.ui.adapter.FavoritesAdapter;
+import com.example.myapplication.ui.adapter.FeaturedAdapter;
+import com.example.myapplication.ui.profile.Home_user;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.adapter.SavedArticlesFragment;
+import com.example.myapplication.ui.adapter.SearchActivity;
 import com.example.myapplication.data.home.HomeArticle;
 import com.example.myapplication.data.home.HomeResponse;
 import com.example.myapplication.databinding.ActivityMainBinding;

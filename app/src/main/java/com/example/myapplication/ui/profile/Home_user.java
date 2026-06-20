@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.profile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import android.widget.Toast;
 
+import com.example.myapplication.ui.auth.Login;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.auth.Register;
 import com.example.myapplication.auth.AuthCallback;
 import com.example.myapplication.auth.AuthErrorInfo;
 import com.example.myapplication.auth.AuthRepository;

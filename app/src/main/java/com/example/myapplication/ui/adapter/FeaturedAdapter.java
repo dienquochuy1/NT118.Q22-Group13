@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.R;
 import com.example.myapplication.network.OnArticleClickListener;
 import java.util.ArrayList;
 import java.util.List;

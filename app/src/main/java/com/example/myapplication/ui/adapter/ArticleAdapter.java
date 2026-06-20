@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.home.ArticleDetailActivity;
 
 import java.util.List;
 

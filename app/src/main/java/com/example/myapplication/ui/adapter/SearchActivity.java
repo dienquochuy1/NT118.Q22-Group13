@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.adapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Entity.Articles;
+import com.example.myapplication.R;
 import com.example.myapplication.data.home.HomeArticle;
 import com.example.myapplication.data.home.HomeResponse;
 import com.example.myapplication.network.ApiClient;
 import com.example.myapplication.network.HomeApi;
+import com.example.myapplication.ui.home.ArticleDetailActivity;
 
 import java.text.Normalizer;
 import java.util.ArrayList;

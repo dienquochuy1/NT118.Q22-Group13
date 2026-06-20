@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.auth;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

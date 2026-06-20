@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="Dành cho bạn"
+                android:text="Trí tuệ nhân tạo (AI), Robot"
                 android:textAllCaps="false"
                 android:textColor="@color/text_secondary"
                 app:cornerRadius="20dp"
@@ -90,7 +90,7 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sản phẩm"
+                android:text="An ninh mạng"
                 android:textAllCaps="false"
                 android:textColor="@color/text_secondary"
                 app:strokeColor="@color/divider_color"
@@ -101,7 +101,33 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:text="Đánh giá"
+                android:text="Review công nghệ"
+                android:textColor="@color/text_secondary"
+                android:textAllCaps="false"
+                app:strokeColor="@color/divider_color"
+                app:cornerRadius="20dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <!-- Sự kiện Đời sống số           -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Sự kiện Đời sống số"
+                android:textColor="@color/text_secondary"
+                android:textAllCaps="false"
+                app:strokeColor="@color/divider_color"
+                app:cornerRadius="20dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <!--    Khác        -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Khác"
                 android:textColor="@color/text_secondary"
                 android:textAllCaps="false"
                 app:strokeColor="@color/divider_color"

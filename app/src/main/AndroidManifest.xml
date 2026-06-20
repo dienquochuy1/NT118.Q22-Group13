@@ -21,23 +21,23 @@
             android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <activity
-            android:name=".ArticleDetailActivity"
+            android:name=".ui.home.ArticleDetailActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.home.MainActivity"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".ui.adapter.SearchActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.home.MainActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".Edit_Profile"
+            android:name=".ui.profile.Edit_Profile"
             android:exported="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.home.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

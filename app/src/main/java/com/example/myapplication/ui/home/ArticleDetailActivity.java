@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.home;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -19,6 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.ui.adapter.CommentAdapter;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.adapter.RelatedArticlesAdapter;
 import com.example.myapplication.auth.SessionStore;
 import com.example.myapplication.data.ApiResponse;
 import com.example.myapplication.data.ArticleDetailResponse;

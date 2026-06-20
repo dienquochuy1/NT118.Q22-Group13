@@ -1,9 +1,7 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.profile;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import android.graphics.Bitmap;
@@ -18,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityEditProfileBinding;
 import com.example.myapplication.network.ApiClient;
 import com.example.myapplication.data.ApiResponse;
