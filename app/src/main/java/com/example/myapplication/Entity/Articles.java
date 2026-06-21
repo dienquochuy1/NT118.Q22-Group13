@@ -18,6 +18,8 @@ public class Articles {
     private String status;
     private int sourceId;
     private boolean bookmarked;
+    private int likesCount;
+
 
     public Articles() {}
 
@@ -80,4 +82,7 @@ public class Articles {
     public void setStatus(String status) { this.status = status; }
     public void setSourceId(int sourceId) { this.sourceId = sourceId; }
     public void setBookmarked(boolean bookmarked) { this.bookmarked = bookmarked; }
+
+    public int getLikesCount() { return likesCount; }
+    public void setLikesCount(int likesCount) { this.likesCount = likesCount; }
 }

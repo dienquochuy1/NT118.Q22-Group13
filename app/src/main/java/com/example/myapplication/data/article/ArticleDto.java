@@ -36,6 +36,13 @@ public class ArticleDto {
     @SerializedName("thumbnail_url")
     private String thumbnailUrl;
 
+    @SerializedName("stats")
+    private com.example.myapplication.data.ArticleStats stats;
+
+    public com.example.myapplication.data.ArticleStats getStats() {
+        return stats;
+    }
+
     public String getId() {
         return id;
     }

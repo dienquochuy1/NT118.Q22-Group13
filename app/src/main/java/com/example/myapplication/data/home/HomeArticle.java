@@ -1,6 +1,7 @@
 package com.example.myapplication.data.home;
 
 import com.google.gson.annotations.SerializedName;
+import com.example.myapplication.data.ArticleStats;
 
 public class HomeArticle {
     @SerializedName("id")
@@ -45,4 +46,10 @@ public class HomeArticle {
 
     public String getThumbnail() { return thumbnail; }
     public void setThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
+
+    @SerializedName("stats")
+    private ArticleStats stats;
+
+    public ArticleStats getStats() { return stats; }
+    public void setStats(ArticleStats stats) { this.stats = stats; }
 }

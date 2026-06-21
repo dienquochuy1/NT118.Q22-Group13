@@ -35,6 +35,10 @@ public class FeaturedAdapter extends RecyclerView.Adapter<FeaturedAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public List<Articles> getItems() {
+        return items;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
