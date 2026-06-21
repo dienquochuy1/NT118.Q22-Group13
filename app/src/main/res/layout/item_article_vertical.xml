@@ -111,7 +111,8 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/bookmark_outline"
-                        app:tint="@color/text_secondary" />
+                        app:tint="@color/text_secondary"
+                        android:visibility="gone" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

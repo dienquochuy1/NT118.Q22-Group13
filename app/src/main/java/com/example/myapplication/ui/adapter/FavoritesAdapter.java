@@ -35,6 +35,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         notifyDataSetChanged();
     }
 
+    public List<Articles> getItems() {
+        return items;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,8 +51,15 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         Articles article = items.get(position);
         holder.title.setText(article.getTitle());
         holder.tag.setText(article.getCategory());
-        holder.source.setText(article.getSource());
-        holder.likes.setText("1.2k"); // Giá trị tương tác mẫu theo UI mục tiêu
+        String src = article.getSource();
+        if (src != null && (src.startsWith("http://") || src.startsWith("https://"))) {
+            src = com.example.myapplication.util.FormatUtils.extractSourceName(src);
+        }
+        holder.source.setText(src);
+        
+        if (holder.likes != null) {
+            holder.likes.setText(com.example.myapplication.util.FormatUtils.formatLikesCount(article.getLikesCount()));
+        }
 
         if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
             Glide.with(context).load(article.getImageUrl()).centerCrop().into(holder.image);

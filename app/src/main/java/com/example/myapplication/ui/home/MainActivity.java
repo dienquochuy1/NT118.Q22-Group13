@@ -41,7 +41,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.myapplication.auth.SessionStore;
+import com.example.myapplication.data.ApiResponse;
+import com.example.myapplication.data.article.ArticleDto;
+
 public class MainActivity extends AppCompatActivity {
+    public static volatile boolean isBookmarkDirty = false;
+    public static volatile boolean isLikesDirty = false;
 
     ActivityMainBinding activityMainBinding;
 
@@ -188,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
         featuredAdapter.setItems(latestItems);
         favoritesAdapter.setItems(trendingItems);
         articlesAdapter.setItems(generalItems);
+        
+        fetchBookmarksAndSync();
     }
 
     /**
@@ -201,7 +209,8 @@ public class MainActivity extends AppCompatActivity {
             if (item == null) continue;
 
             String title = item.getTitle() != null ? item.getTitle() : "(Không có tiêu đề)";
-            String source = item.getSource() != null ? item.getSource() : "TechByte";
+            String rawSource = item.getSource() != null ? item.getSource() : "TechByte";
+            String source = com.example.myapplication.util.FormatUtils.getCleanSourceName(rawSource);
             String time = item.getTime() != null ? item.getTime() : "Vừa xong";
             String thumbnail = item.getThumbnail() != null ? item.getThumbnail() : "";
             String content = item.getContent() != null ? item.getContent() : "";
@@ -210,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
             // 🔥 TRÍCH XUẤT ID THẬT: Lấy ID dạng int từ Backend chuyển sang String cấp cho lớp UI
             String realId = String.valueOf(item.getId());
 
-            mapped.add(new Articles(
+            Articles articleObj = new Articles(
                     realId,
                     title,
                     summary,
@@ -221,7 +230,13 @@ public class MainActivity extends AppCompatActivity {
                     thumbnail,
                     time,
                     System.currentTimeMillis()
-            ));
+            );
+            if (item.getStats() != null) {
+                articleObj.setLikesCount(item.getStats().getLikes());
+            } else {
+                articleObj.setLikesCount(0);
+            }
+            mapped.add(articleObj);
         }
         return mapped;
     }
@@ -288,6 +303,112 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         if (activityMainBinding != null && activityMainBinding.layoutBottomNav != null) {
             outState.putInt("selected_tab", activityMainBinding.layoutBottomNav.homeBottomNavigation.getSelectedItemId());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isBookmarkDirty) {
+            isBookmarkDirty = false;
+            fetchBookmarksAndSync();
+        }
+        if (isLikesDirty) {
+            isLikesDirty = false;
+            fetchHomeData();
+        }
+    }
+
+    private void fetchBookmarksAndSync() {
+        SessionStore sessionStore = new SessionStore(this);
+        if (!sessionStore.isLoggedIn()) {
+            resetAllBookmarks();
+            return;
+        }
+
+        String authHeader = sessionStore.getTokenType() + " " + sessionStore.getAccessToken();
+        ApiClient.getArticleActionApi().getBookmarks(authHeader)
+                .enqueue(new Callback<ApiResponse<List<ArticleDto>>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<List<ArticleDto>>> call, Response<ApiResponse<List<ArticleDto>>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            List<ArticleDto> bookmarkedList = response.body().getData();
+                            if (bookmarkedList != null) {
+                                syncBookmarks(bookmarkedList);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<List<ArticleDto>>> call, Throwable t) {
+                        // Ignore
+                    }
+                });
+    }
+
+    private void resetAllBookmarks() {
+        if (featuredAdapter != null && featuredAdapter.getItems() != null) {
+            for (Articles article : featuredAdapter.getItems()) {
+                article.setBookmarked(false);
+            }
+            featuredAdapter.notifyDataSetChanged();
+        }
+        if (favoritesAdapter != null && favoritesAdapter.getItems() != null) {
+            for (Articles article : favoritesAdapter.getItems()) {
+                article.setBookmarked(false);
+            }
+            favoritesAdapter.notifyDataSetChanged();
+        }
+        if (articlesAdapter != null && articlesAdapter.getItems() != null) {
+            for (Articles article : articlesAdapter.getItems()) {
+                article.setBookmarked(false);
+            }
+            articlesAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void syncBookmarks(List<ArticleDto> bookmarkedList) {
+        java.util.Set<String> bookmarkedIds = new java.util.HashSet<>();
+        for (ArticleDto dto : bookmarkedList) {
+            if (dto != null && dto.getId() != null) {
+                bookmarkedIds.add(dto.getId());
+            }
+        }
+
+        if (featuredAdapter != null && featuredAdapter.getItems() != null) {
+            boolean updated = false;
+            for (Articles article : featuredAdapter.getItems()) {
+                boolean state = bookmarkedIds.contains(article.getId());
+                if (article.isBookmarked() != state) {
+                    article.setBookmarked(state);
+                    updated = true;
+                }
+            }
+            if (updated) featuredAdapter.notifyDataSetChanged();
+        }
+
+        if (favoritesAdapter != null && favoritesAdapter.getItems() != null) {
+            boolean updated = false;
+            for (Articles article : favoritesAdapter.getItems()) {
+                boolean state = bookmarkedIds.contains(article.getId());
+                if (article.isBookmarked() != state) {
+                    article.setBookmarked(state);
+                    updated = true;
+                }
+            }
+            if (updated) favoritesAdapter.notifyDataSetChanged();
+        }
+
+        if (articlesAdapter != null && articlesAdapter.getItems() != null) {
+            boolean updated = false;
+            for (Articles article : articlesAdapter.getItems()) {
+                boolean state = bookmarkedIds.contains(article.getId());
+                if (article.isBookmarked() != state) {
+                    article.setBookmarked(state);
+                    updated = true;
+                }
+            }
+            if (updated) articlesAdapter.notifyDataSetChanged();
         }
     }
 }

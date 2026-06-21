@@ -50,6 +50,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         holder.tvCategory.setText(article.getCategory());
 
         // Bookmark toggle icon
+        holder.btnBookmark.setVisibility(android.view.View.GONE);
         holder.btnBookmark.setImageResource(
                 article.isBookmarked() ? R.drawable.bookmark_filled : R.drawable.bookmark_outline
         );

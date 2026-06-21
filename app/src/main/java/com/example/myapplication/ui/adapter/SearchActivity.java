@@ -111,7 +111,8 @@ public class SearchActivity extends AppCompatActivity {
             if (item == null) continue;
 
             String title = item.getTitle() != null ? item.getTitle() : "(Không có tiêu đề)";
-            String source = item.getSource() != null ? item.getSource() : "TechByte";
+            String rawSource = item.getSource() != null ? item.getSource() : "TechByte";
+            String source = com.example.myapplication.util.FormatUtils.getCleanSourceName(rawSource);
             String time = item.getTime() != null ? item.getTime() : "Vừa xong";
             String thumbnail = item.getThumbnail() != null ? item.getThumbnail() : "";
             String summary = item.getSummary() != null && !item.getSummary().trim().isEmpty()
@@ -119,7 +120,7 @@ public class SearchActivity extends AppCompatActivity {
                     : source + " - " + time;
             String content = item.getContent() != null ? item.getContent() : "";
 
-            mapped.add(new Articles(
+            Articles articleObj = new Articles(
                     String.valueOf(item.getId()),
                     title,
                     summary,
@@ -130,7 +131,13 @@ public class SearchActivity extends AppCompatActivity {
                     thumbnail,
                     time,
                     System.currentTimeMillis()
-            ));
+            );
+            if (item.getStats() != null) {
+                articleObj.setLikesCount(item.getStats().getLikes());
+            } else {
+                articleObj.setLikesCount(0);
+            }
+            mapped.add(articleObj);
         }
         return mapped;
     }

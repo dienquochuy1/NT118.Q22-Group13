@@ -93,7 +93,7 @@ public class SavedArticlesFragment extends Fragment {
         for (ArticleDto dto : dtos) {
             if (dto == null) continue;
 
-            articles.add(new Articles(
+            Articles article = new Articles(
                     dto.getId(),
                     safeText(dto.getTitle(), "(Không có tiêu đề)"),
                     safeText(dto.getSummary(), ""),
@@ -104,7 +104,9 @@ public class SavedArticlesFragment extends Fragment {
                     safeText(dto.getThumbnailUrl(), ""),
                     safeText(dto.getTime(), ""),
                     System.currentTimeMillis()
-            ));
+            );
+            article.setBookmarked(true);
+            articles.add(article);
         }
         return articles;
     }

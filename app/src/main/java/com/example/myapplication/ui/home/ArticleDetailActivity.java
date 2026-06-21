@@ -30,6 +30,7 @@ import com.example.myapplication.data.article.ArticleActionState;
 import com.example.myapplication.data.comment.CommentCreateRequest;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.network.ApiClient;
+import com.example.myapplication.util.FormatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     // Khai báo View theo file XML mới thiết kế
     private ImageView imgHero, btnLike, btnBookmark, btnShare, btnBack;
-    private TextView tvCategory, tvTitle, tvAuthor, tvDate, tvSummary, tvContent, tvCommentsStatus, tvCommentsTitle;
+    private TextView tvCategory, tvTitle, tvAuthor, tvDate, tvSummary, tvContent, tvCommentsStatus, tvCommentsTitle, tvLikesCountDetail, tvSourceUrl;
     private EditText etCommentContent;
     private Button btnSendComment;
     private LinearLayout btnTts;
@@ -54,6 +55,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private MediaPlayer summaryVoicePlayer;
     private boolean isPreparingSummaryVoice;
     private String summaryVoiceLink;
+    private int likesCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +147,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
         tvCommentsTitle = findViewById(R.id.tv_comments_title);
         etCommentContent = findViewById(R.id.et_comment_content);
         btnSendComment = findViewById(R.id.btn_send_comment);
+        tvLikesCountDetail = findViewById(R.id.tv_likes_count_detail);
+        tvSourceUrl = findViewById(R.id.tv_detail_source_url);
         sessionStore = new SessionStore(this);
     }
 
@@ -193,6 +197,18 @@ public class ArticleDetailActivity extends AppCompatActivity {
                         ArticleActionState state = body.getData();
                         boolean liked = state != null && Boolean.TRUE.equals(state.isLiked());
                         btnLike.setImageResource(liked ? R.drawable.heart_filled : R.drawable.heart_outline);
+                        
+                        if (liked) {
+                            likesCount++;
+                        } else {
+                            likesCount = Math.max(0, likesCount - 1);
+                        }
+                        if (tvLikesCountDetail != null) {
+                            tvLikesCountDetail.setText(String.valueOf(likesCount));
+                        }
+                        
+                        MainActivity.isLikesDirty = true;
+                        
                         Toast.makeText(ArticleDetailActivity.this, liked ? "Đã thích bài viết." : "Đã bỏ thích bài viết.", Toast.LENGTH_SHORT).show();
                     }
 
@@ -222,6 +238,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
                         ArticleActionState state = body.getData();
                         boolean bookmarked = state != null && Boolean.TRUE.equals(state.isBookmarked());
                         btnBookmark.setImageResource(bookmarked ? R.drawable.bookmark_filled : R.drawable.bookmark_outline);
+                        
+                        // Set dirty flag to sync with MainActivity lists
+                        MainActivity.isBookmarkDirty = true;
+                        
                         Toast.makeText(ArticleDetailActivity.this, bookmarked ? "Đã lưu bài viết." : "Đã bỏ lưu bài viết.", Toast.LENGTH_SHORT).show();
                     }
 
@@ -277,10 +297,49 @@ public class ArticleDetailActivity extends AppCompatActivity {
             tvSummary.setText("Bài viết ngắn, không cần tóm tắt.");
         }
 
-        // Gán text nguồn và định dạng thời gian
-        tvAuthor.setText("TechByte Premium");
+        // Khởi tạo lượt thích từ stats (với null-check an toàn)
+        if (data.getStats() != null) {
+            likesCount = data.getStats().getLikes();
+        } else {
+            likesCount = 0;
+        }
+        if (tvLikesCountDetail != null) {
+            tvLikesCountDetail.setText(String.valueOf(likesCount));
+        }
+
+        // Gán text nguồn và định dạng thời gian thực UTC
+        if (data.getSource() != null && !data.getSource().isEmpty()) {
+            String sourceStr = data.getSource().trim();
+            if (sourceStr.startsWith("http://") || sourceStr.startsWith("https://")) {
+                tvAuthor.setText("TechByte Premium");
+                if (tvSourceUrl != null) {
+                    tvSourceUrl.setVisibility(View.VISIBLE);
+                    String sourceName = FormatUtils.extractSourceName(sourceStr);
+                    tvSourceUrl.setText("Nguồn: " + sourceName);
+                    tvSourceUrl.setOnClickListener(v -> {
+                        try {
+                            android.content.Intent browserIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(sourceStr));
+                            startActivity(browserIntent);
+                        } catch (Exception e) {
+                            Toast.makeText(ArticleDetailActivity.this, "Không thể mở liên kết.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            } else {
+                tvAuthor.setText(sourceStr);
+                if (tvSourceUrl != null) {
+                    tvSourceUrl.setVisibility(View.GONE);
+                }
+            }
+        } else {
+            tvAuthor.setText("TechByte Premium");
+            if (tvSourceUrl != null) {
+                tvSourceUrl.setVisibility(View.GONE);
+            }
+        }
+
         if (data.getPublishedAt() != null) {
-            tvDate.setText("• " + data.getPublishedAt());
+            tvDate.setText("• " + com.example.myapplication.util.DateUtils.formatPublishedDate(data.getPublishedAt()));
         }
 
         // Nạp ảnh Thumbnail lớn mượt mà bằng thư viện Glide
