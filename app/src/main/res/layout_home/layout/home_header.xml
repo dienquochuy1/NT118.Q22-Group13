@@ -52,88 +52,91 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:scrollbars="horizontal"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/tv_date">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginEnd="8dp">
+            android:paddingEnd="16dp">
 
-            <!-- Nút Tin tức (Đang chọn - Màu xanh) -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_news"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Tin tức"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/colorBackground"
-                app:backgroundTint="#27AE60"
-                app:cornerRadius="20dp"
-                android:layout_marginEnd="8dp"/>
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
+                app:strokeColor="@color/divider_color"
+                app:cornerRadius="20dp"/>
 
-            <!-- Nút Dành cho bạn -->
-
-            <!-- Nút Sản phẩm -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_ai"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="Trí tuệ nhân tạo (AI), Robot"
                 android:textAllCaps="false"
-                android:textColor="@color/text_secondary"
-                app:cornerRadius="20dp"
-                app:strokeColor="@color/divider_color" />
-
-            <com.google.android.material.button.MaterialButton
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="An ninh mạng"
-                android:textAllCaps="false"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
                 app:strokeColor="@color/divider_color"
                 app:cornerRadius="20dp" />
 
-            <!-- Đánh giá -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_security"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="An ninh mạng"
+                android:textAllCaps="false"
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
+                app:strokeColor="@color/divider_color"
+                app:cornerRadius="20dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_review"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Review công nghệ"
-                android:textColor="@color/text_secondary"
                 android:textAllCaps="false"
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
                 app:strokeColor="@color/divider_color"
-                app:cornerRadius="20dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp" />
+                app:cornerRadius="20dp" />
 
-            <!-- Sự kiện Đời sống số           -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_life"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Sự kiện Đời sống số"
-                android:textColor="@color/text_secondary"
                 android:textAllCaps="false"
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
                 app:strokeColor="@color/divider_color"
-                app:cornerRadius="20dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp" />
+                app:cornerRadius="20dp" />
 
-            <!--    Khác        -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cat_other"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:text="Khác"
-                android:textColor="@color/text_secondary"
                 android:textAllCaps="false"
+                android:textColor="@color/category_button_text"
+                app:backgroundTint="@color/category_button_bg"
                 app:strokeColor="@color/divider_color"
-                app:cornerRadius="20dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp" />
+                app:cornerRadius="20dp" />
 
         </LinearLayout>
     </HorizontalScrollView>

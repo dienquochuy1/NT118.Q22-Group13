@@ -84,7 +84,21 @@ public class MainActivity extends AppCompatActivity {
             activityMainBinding.layoutBottomNav.homeBottomNavigation.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.bottom_nav_home) {
-                    showHomeUI();
+                    // 1. Luôn hiện lại Header chứa hàng nút lọc
+                    activityMainBinding.layoutHeader.getRoot().setVisibility(View.VISIBLE);
+
+                    // 2. Kiểm tra nếu nút Tin Tức đang được chọn thì hiện Mâm cỗ tổng hợp
+                    if (activityMainBinding.layoutHeader.btnCatNews.isSelected()) {
+                        showHomeUI();
+                    } else {
+                        // 3. Nếu một danh mục khác đang được chọn, ẩn mâm cỗ tổng hợp đi
+                        activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+                        activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+
+                        // Tìm xem nút nào đang xanh để lấy lại tên danh mục và dựng lại Fragment
+                        String currentCategory = getSelectedCategoryName();
+                        replaceFragment(CategoryFragment.newInstance(currentCategory));
+                    }
                     return true;
                 } else if (id == R.id.bottom_nav_bookmark) {
                     showSavedUI();
@@ -114,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
                 showHomeUI();
             }
         }
+
+        setupCategoryFilterButtons();
     }
 
     private void updateHeaderDate() {
@@ -289,5 +305,67 @@ public class MainActivity extends AppCompatActivity {
         if (activityMainBinding != null && activityMainBinding.layoutBottomNav != null) {
             outState.putInt("selected_tab", activityMainBinding.layoutBottomNav.homeBottomNavigation.getSelectedItemId());
         }
+    }
+
+    private void setupCategoryFilterButtons() {
+        // 1. Khai báo danh sách gom nhóm quản lý các nút
+        java.util.List<com.google.android.material.button.MaterialButton> catButtons = new java.util.ArrayList<>();
+
+        // 2. Ánh xạ View thông qua lớp binding trung gian layoutHeader
+        catButtons.add(activityMainBinding.layoutHeader.btnCatNews);
+        catButtons.add(activityMainBinding.layoutHeader.btnCatAi);
+        catButtons.add(activityMainBinding.layoutHeader.btnCatSecurity);
+        catButtons.add(activityMainBinding.layoutHeader.btnCatReview);
+        catButtons.add(activityMainBinding.layoutHeader.btnCatLife);
+        catButtons.add(activityMainBinding.layoutHeader.btnCatOther);
+
+        // Mặc định ban đầu khi mở app: Chọn sẵn nút Tin Tức đầu tiên
+        activityMainBinding.layoutHeader.btnCatNews.setSelected(true);
+
+        // 3. Chạy vòng lặp gán sự kiện Click tập trung cho toàn bộ hàng nút
+        for (com.google.android.material.button.MaterialButton button : catButtons) {
+            button.setOnClickListener(v -> {
+                // Đưa tất cả các nút về trạng thái tắt lựa chọn
+                for (com.google.android.material.button.MaterialButton btn : catButtons) {
+                    btn.setSelected(false);
+                }
+
+                // Bật sáng màu xanh riêng cho nút vừa được click
+                button.setSelected(true);
+
+                // 4. Xử lý logic hoán đổi cấu trúc giao diện màn hình bên dưới
+                if (button.getId() == R.id.btn_cat_news) {
+                    // Nếu bấm về nút Tin tức gốc -> Hiện lại mâm cỗ tổng hợp cũ
+                    showHomeUI();
+                } else {
+                    // Nếu bấm vào bất kỳ danh mục nào khác -> Ẩn mâm cỗ, hiện không gian trống kẹp giữa
+                    activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+                    activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+
+                    // Thực hiện thay thế mảnh Fragment trống dùng chung kèm chuỗi tên danh mục tương ứng
+                    String selectedCategory = button.getText().toString();
+                    replaceFragment(CategoryFragment.newInstance(selectedCategory));
+                }
+            });
+        }
+    }
+
+    private String getSelectedCategoryName() {
+        if (activityMainBinding.layoutHeader.btnCatAi.isSelected()) {
+            return activityMainBinding.layoutHeader.btnCatAi.getText().toString();
+        }
+        if (activityMainBinding.layoutHeader.btnCatSecurity.isSelected()) {
+            return activityMainBinding.layoutHeader.btnCatSecurity.getText().toString();
+        }
+        if (activityMainBinding.layoutHeader.btnCatReview.isSelected()) {
+            return activityMainBinding.layoutHeader.btnCatReview.getText().toString();
+        }
+        if (activityMainBinding.layoutHeader.btnCatLife.isSelected()) {
+            return activityMainBinding.layoutHeader.btnCatLife.getText().toString();
+        }
+        if (activityMainBinding.layoutHeader.btnCatOther.isSelected()) {
+            return activityMainBinding.layoutHeader.btnCatOther.getText().toString();
+        }
+        return "Tin tức";
     }
 }
