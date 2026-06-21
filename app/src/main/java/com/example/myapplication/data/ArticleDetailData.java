@@ -37,6 +37,12 @@ public class ArticleDetailData {
     @SerializedName("related")
     private List<RelatedArticleDto> related; // Danh sách bài viết liên quan dưới đáy màn hình
 
+    @SerializedName("is_liked")
+    private Boolean liked;
+
+    @SerializedName("is_bookmarked")
+    private Boolean bookmarked;
+
     // Getters and Setters
     public int getId() { return id; }
     public String getTitle() { return title; }
@@ -49,4 +55,8 @@ public class ArticleDetailData {
     public String getPublishedAt() { return publishedAt; }
     public ArticleStats getStats() { return stats; }
     public List<RelatedArticleDto> getRelated() { return related; }
+    public Boolean isLiked() { return liked; }
+    public Boolean isBookmarked() { return bookmarked; }
+    public void setLiked(Boolean liked) { this.liked = liked; }
+    public void setBookmarked(Boolean bookmarked) { this.bookmarked = bookmarked; }
 }

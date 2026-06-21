@@ -90,28 +90,15 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:src="@drawable/heart_outline"
-                        app:tint="@color/text_secondary" />
 
-                    <TextView
-                        android:id="@+id/tv_likes_vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="12dp"
-                        android:text="540"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
 
                     <ImageView
                         android:id="@+id/btn_bookmark_vertical"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/bookmark_outline"
-                        app:tint="@color/text_secondary" />
+                        app:tint="@color/text_secondary"
+                        android:visibility="gone" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

@@ -172,11 +172,21 @@
                             android:src="@drawable/heart_outline"
                             app:tint="@color/text_secondary" />
 
+                        <TextView
+                            android:id="@+id/tv_likes_count_detail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_gravity="center_vertical"
+                            android:text="0"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+
                         <ImageView
                             android:id="@+id/btn_bookmark_detail"
                             android:layout_width="22dp"
                             android:layout_height="22dp"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="12dp"
                             android:src="@drawable/bookmark_outline"
                             app:tint="@color/text_secondary" />
 
@@ -237,6 +247,18 @@
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:lineSpacingMultiplier="1.5" />
+
+                <TextView
+                    android:id="@+id/tv_detail_source_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text=""
+                    android:textColor="#27AE60"
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    android:lineSpacingMultiplier="1.3" />
 
                 <View
                     android:layout_width="match_parent"
