@@ -259,8 +259,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
             return;
         }
 
+        String authHeader = null;
+        if (sessionStore != null && sessionStore.isLoggedIn()) {
+            authHeader = getAuthorizationHeader();
+        }
+
         // Gọi API qua tầng Network vừa dựng ở Giai đoạn 2
-        ApiClient.getArticleApi().getArticleDetail(articleId).enqueue(new Callback<ArticleDetailResponse>() {
+        ApiClient.getArticleApi().getArticleDetail(authHeader, articleId).enqueue(new Callback<ArticleDetailResponse>() {
             @Override
             public void onResponse(Call<ArticleDetailResponse> call, Response<ArticleDetailResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
@@ -289,6 +294,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
         tvTitle.setText(data.getTitle());
         tvContent.setText(data.getContent());
         summaryVoiceLink = data.getSumVoiceLink();
+
+        // Khởi động trạng thái thích và lưu (bookmark) bài viết
+        boolean liked = data.isLiked() != null && data.isLiked();
+        btnLike.setImageResource(liked ? R.drawable.heart_filled : R.drawable.heart_outline);
+
+        boolean bookmarked = data.isBookmarked() != null && data.isBookmarked();
+        btnBookmark.setImageResource(bookmarked ? R.drawable.bookmark_filled : R.drawable.bookmark_outline);
 
         // Đổ dữ liệu tóm tắt AI (Gemma) vào Card viền xanh
         if (data.getSummaryText() != null && !data.getSummaryText().isEmpty()) {

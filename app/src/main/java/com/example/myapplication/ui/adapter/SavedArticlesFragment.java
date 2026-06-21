@@ -106,6 +106,11 @@ public class SavedArticlesFragment extends Fragment {
                     System.currentTimeMillis()
             );
             article.setBookmarked(true);
+            if (dto.getStats() != null) {
+                article.setLikesCount(dto.getStats().getLikes());
+            } else {
+                article.setLikesCount(0);
+            }
             articles.add(article);
         }
         return articles;
