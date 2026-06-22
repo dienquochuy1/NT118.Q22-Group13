@@ -52,7 +52,6 @@ android {
                 "src/main/res/layout_home",
                 "src/main/res/layout_profile",
                 "src/main/res/layout_article",
-                "src/main/res/layout",
                 "src/main/res"
             )
         }
