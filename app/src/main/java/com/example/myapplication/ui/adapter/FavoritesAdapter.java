@@ -57,9 +57,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         }
         holder.source.setText(src);
         
-        if (holder.likes != null) {
-            holder.likes.setText(com.example.myapplication.util.FormatUtils.formatLikesCount(article.getLikesCount()));
-        }
+
 
         if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
             Glide.with(context).load(article.getImageUrl()).centerCrop().into(holder.image);
@@ -79,7 +77,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
-        TextView title, tag, source, likes;
+        TextView title, tag, source;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -87,7 +85,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
             title = itemView.findViewById(R.id.tv_title_favorite);
             tag = itemView.findViewById(R.id.tv_tag_favorite);
             source = itemView.findViewById(R.id.tv_source_favorite);
-//            likes = itemView.findViewById(R.id.tv_likes_favorite);
         }
     }
 }
