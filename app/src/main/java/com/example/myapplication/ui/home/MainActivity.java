@@ -221,7 +221,8 @@ public class MainActivity extends AppCompatActivity {
             String time = item.getTime() != null ? item.getTime() : "Vừa xong";
             String thumbnail = item.getThumbnail() != null ? item.getThumbnail() : "";
             String content = item.getContent() != null ? item.getContent() : "";
-            String summary = source + " • " + time;
+            String cleanSource = com.example.myapplication.util.FormatUtils.getCleanSourceName(source);
+            String summary = cleanSource + " • " + time;
 
             // 🔥 TRÍCH XUẤT ID THẬT: Lấy ID dạng int từ Backend chuyển sang String cấp cho lớp UI
             String realId = String.valueOf(item.getId());

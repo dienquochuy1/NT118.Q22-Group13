@@ -184,7 +184,8 @@ public class CategoryFragment extends Fragment {
             String thumbnail = item.getThumbnailUrl() != null ? item.getThumbnailUrl() : "";
 
             // Định dạng chuỗi gộp hiển thị trên TextView tv_info_category_card
-            String summaryText = source + " • " + time;
+            String cleanSource = com.example.myapplication.util.FormatUtils.getCleanSourceName(source);
+            String summaryText = cleanSource + " • " + time;
 
             uiList.add(new Articles(
                     String.valueOf(item.getId()),
