@@ -156,7 +156,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             time = itemView.findViewById(R.id.tv_time_vertical);
             source = itemView.findViewById(R.id.tv_source_vertical);
             btnBookmark = itemView.findViewById(R.id.btn_bookmark_vertical);
-            likes = itemView.findViewById(R.id.tv_likes_vertical);
+//            likes = itemView.findViewById(R.id.tv_likes_vertical);
         }
     }
 }
