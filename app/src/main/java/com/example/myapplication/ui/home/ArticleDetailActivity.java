@@ -351,7 +351,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         }
 
         if (data.getPublishedAt() != null) {
-//            tvDate.setText("• " + com.example.myapplication.util.DateUtils.formatPublishedDate(data.getPublishedAt()));
+            tvDate.setText("• " + com.example.myapplication.util.DateUtils.formatPublishedDate(data.getPublishedAt()));
         }
 
         // Nạp ảnh Thumbnail lớn mượt mà bằng thư viện Glide
