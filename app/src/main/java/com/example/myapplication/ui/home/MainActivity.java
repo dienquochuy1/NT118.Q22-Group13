@@ -30,6 +30,7 @@ import com.example.myapplication.data.home.HomeResponse;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.network.ApiClient;
 import com.example.myapplication.network.HomeApi;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private FeaturedAdapter featuredAdapter;
     private FavoritesAdapter favoritesAdapter;
     private ArticlesAdapter articlesAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +169,14 @@ public class MainActivity extends AppCompatActivity {
             rvGeneral.setAdapter(articlesAdapter);
         }
 
+        // Cấu hình SwipeRefreshLayout cho việc kéo để reload trang chủ
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setOnRefreshListener(this::fetchHomeData);
+            // Thiết lập màu sắc vòng xoay loading
+            swipeRefreshLayout.setColorSchemeResources(R.color.primary_accent, android.R.color.holo_green_dark);
+        }
+
         // Bắt đầu kích hoạt gọi API mạng lấy dữ liệu thật
         fetchHomeData();
     }
@@ -179,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
         homeApi.getHome().enqueue(new Callback<HomeResponse>() {
             @Override
             public void onResponse(Call<HomeResponse> call, Response<HomeResponse> response) {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
                 if (response.isSuccessful() && response.body() != null) {
                     applyHomeData(response.body());
                 } else {
@@ -188,6 +201,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<HomeResponse> call, Throwable t) {
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
                 Toast.makeText(MainActivity.this, "Không thể kết nối Server: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
