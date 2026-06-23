@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Cấu hình SwipeRefreshLayout cho việc kéo để reload trang chủ
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = findViewById(R.id.layoutHomeViews);
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setOnRefreshListener(this::fetchHomeData);
             // Thiết lập màu sắc vòng xoay loading
