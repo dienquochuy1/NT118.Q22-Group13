@@ -138,7 +138,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
-                android:weightSum="3">
+                android:weightSum="2">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
@@ -178,7 +178,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginStart="8dp"
                     app:cardBackgroundColor="@color/surface_dark"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
@@ -207,73 +207,7 @@
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardBackgroundColor="@color/surface_dark"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-                        <TextView
-                            android:id="@+id/tv_stat_interests"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/primary_accent"
-                            android:textSize="20sp"
-                            android:fontFamily="@font/inter_bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="SỞ THÍCH"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="10sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-
-            <!-- Interests Chips Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sở thích"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/inter_bold"
-                        android:layout_marginBottom="12dp"/>
-
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/cg_interests"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                    </com.google.android.material.chip.ChipGroup>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
             <!-- Settings Menu -->
             <com.google.android.material.card.MaterialCardView
