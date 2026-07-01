@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.comment.CommentDto;
 import com.example.myapplication.data.comment.CommentUserDto;
+import com.example.myapplication.util.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,19 +45,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
         holder.tvUserName.setText(name);
         holder.tvContent.setText(comment.getContent() != null ? comment.getContent() : "");
-        holder.tvCreatedAt.setText(formatDate(comment.getCreatedAt()));
+        holder.tvCreatedAt.setText(DateUtils.formatCommentDate(comment.getCreatedAt()));
     }
 
     @Override
     public int getItemCount() {
         return comments.size();
-    }
-
-    private String formatDate(String value) {
-        if (value == null || value.isEmpty()) {
-            return "";
-        }
-        return value.replace("T", " ").replace("Z", "");
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
