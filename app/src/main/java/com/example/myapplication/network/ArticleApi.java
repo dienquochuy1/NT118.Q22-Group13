@@ -1,8 +1,12 @@
 package com.example.myapplication.network;
 
+import com.example.myapplication.data.ApiResponse;
 import com.example.myapplication.data.ArticleDetailResponse;
 import com.example.myapplication.data.ArticlePagedResponse;
 import com.example.myapplication.data.HistoryRequest;
+import com.example.myapplication.data.article.ArticleDto;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -32,5 +36,10 @@ public interface ArticleApi {
     Call<Void> storeReadingHistory(
             @Header("Authorization") String authorization,
             @Body HistoryRequest body
+    );
+
+    @GET("history")
+    Call<ApiResponse<List<ArticleDto>>> getReadingHistory(
+            @Header("Authorization") String authorization
     );
 }

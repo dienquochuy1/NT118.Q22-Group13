@@ -21,6 +21,7 @@ import com.example.myapplication.ui.adapter.ArticlesAdapter;
 import com.example.myapplication.Entity.Articles;
 import com.example.myapplication.ui.adapter.FavoritesAdapter;
 import com.example.myapplication.ui.adapter.FeaturedAdapter;
+import com.example.myapplication.ui.adapter.ReadingHistoryFragment;
 import com.example.myapplication.ui.profile.Home_user;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.adapter.SavedArticlesFragment;
@@ -383,5 +384,14 @@ public class MainActivity extends AppCompatActivity {
             return activityMainBinding.layoutHeader.btnCatOther.getText().toString();
         }
         return "Tin tức";
+    }
+
+    public void changeToReadingHistoryFragment() {
+        if (activityMainBinding != null) {
+            activityMainBinding.layoutHeader.getRoot().setVisibility(View.GONE);
+            activityMainBinding.layoutHomeViews.getRoot().setVisibility(View.GONE);
+            activityMainBinding.fragmentContainer.setVisibility(View.VISIBLE);
+            replaceFragment(new ReadingHistoryFragment());
+        }
     }
 }

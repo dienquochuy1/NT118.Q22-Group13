@@ -20,6 +20,7 @@ import com.example.myapplication.auth.AuthCallback;
 import com.example.myapplication.auth.AuthErrorInfo;
 import com.example.myapplication.auth.AuthRepository;
 import com.example.myapplication.auth.SessionStore;
+import com.example.myapplication.ui.home.MainActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class Home_user extends Fragment {
@@ -128,6 +129,17 @@ public class Home_user extends Fragment {
                                 "4. Thay đổi điều khoản: Chúng tôi có quyền cập nhật, sửa đổi các điều khoản này bất kỳ lúc nào mà không cần thông báo trước. Việc bạn tiếp tục sử dụng ứng dụng đồng nghĩa với việc chấp nhận các thay đổi đó.")
                         .setPositiveButton("Đồng ý", (dialog, which) -> dialog.dismiss())
                         .show();
+            });
+        }
+
+        View menuHistory = view.findViewById(R.id.menu_history);
+        if (menuHistory != null) {
+            menuHistory.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    // Bắn tín hiệu chuyển Fragment lịch sử trên MainActivity
+                    mainActivity.changeToReadingHistoryFragment();
+                }
             });
         }
 
