@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.data.HistoryRequest;
 import com.example.myapplication.ui.adapter.CommentAdapter;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.adapter.RelatedArticlesAdapter;
@@ -375,6 +376,9 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         // Kích hoạt lấy luồng bình luận đi kèm bài viết
         loadComments();
+
+        // TỰ ĐỘNG GỌI API LƯU LỊCH SỬ KHI HIỂN THỊ UI THÀNH CÔNG
+        sendReadingHistoryToServer();
     }
 
     private void toggleSummaryVoice() {
@@ -520,5 +524,24 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 Toast.makeText(ArticleDetailActivity.this, "Không thể kết nối máy chủ.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void sendReadingHistoryToServer() {
+        // Chỉ ghi nhận khi người dùng đã đăng nhập hệ thống
+        if (sessionStore == null || !sessionStore.isLoggedIn() || articleId <= 0) return;
+
+        HistoryRequest request = new HistoryRequest(articleId);
+        ApiClient.getArticleApi().storeReadingHistory(getAuthorizationHeader(), request)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        // Chạy ẩn dưới nền (Background thread), không cần bắn Toast thông báo lên UI
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        // Bỏ qua lỗi kết nối mạng để không làm ngắt quãng trải nghiệm đọc báo
+                    }
+                });
     }
 }

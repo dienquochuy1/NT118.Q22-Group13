@@ -2,10 +2,13 @@ package com.example.myapplication.network;
 
 import com.example.myapplication.data.ArticleDetailResponse;
 import com.example.myapplication.data.ArticlePagedResponse;
+import com.example.myapplication.data.HistoryRequest;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -23,5 +26,11 @@ public interface ArticleApi {
             @Query("category") String category,
             @Query("page") int page,
             @Query("per_page") int perPage
+    );
+
+    @POST("history")
+    Call<Void> storeReadingHistory(
+            @Header("Authorization") String authorization,
+            @Body HistoryRequest body
     );
 }
