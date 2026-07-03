@@ -39,7 +39,16 @@ public class ApiClient {
 
                         if (response.code() == 401) {
                             if (tokenExpiredListener != null) {
-                                tokenExpiredListener.onTokenExpired();
+                                okhttp3.ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
+                                String jsonResponse = responseBody.string();
+
+                                if (jsonResponse.contains("AUTH_INVALID_CREDENTIALS") || jsonResponse.contains("Invalid credentials")) {
+                                    return response; // Trả về cho Login fragment tự xử lý hiển thị lỗi
+                                }
+
+                                if (tokenExpiredListener != null) {
+                                    tokenExpiredListener.onTokenExpired();
+                                }
                             }
                         }
                         return response;
