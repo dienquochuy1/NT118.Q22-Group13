@@ -113,6 +113,21 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
         }
+        com.example.myapplication.network.ApiClient.setOnTokenExpiredListener(() -> {
+            // Chạy trên luồng UI Thread để tương tác với giao diện Android an toàn
+            runOnUiThread(() -> {
+                // 1. Dọn sạch toàn bộ phiên dữ liệu cục bộ
+                com.example.myapplication.auth.SessionStore sessionStore = new com.example.myapplication.auth.SessionStore(this);
+                sessionStore.clearSession();
+
+                Toast.makeText(this, "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!", Toast.LENGTH_LONG).show();
+
+                // 2. Ép Fragment Container thay thế màn hình hiện tại thành màn hình Login
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new com.example.myapplication.ui.auth.Login())
+                        .commit();
+            });
+        });
 
         if (savedInstanceState == null) {
             activityMainBinding.layoutBottomNav.homeBottomNavigation.setSelectedItemId(R.id.bottom_nav_home);

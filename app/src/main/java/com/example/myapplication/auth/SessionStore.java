@@ -20,8 +20,10 @@ public class SessionStore {
     private static final String KEY_USER_ROLE = "user_role";
 
     private final SharedPreferences prefs;
+    private final Context context;
 
     public SessionStore(Context context) {
+        this.context = context.getApplicationContext();
         this.prefs = context.getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
@@ -103,6 +105,7 @@ public class SessionStore {
 
     public void clearSession() {
         prefs.edit().clear().apply();
+        context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit().clear().apply();
     }
 }
 

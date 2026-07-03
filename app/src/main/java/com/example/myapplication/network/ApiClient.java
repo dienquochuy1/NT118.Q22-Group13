@@ -3,6 +3,8 @@ package com.example.myapplication.network;
 import com.example.myapplication.BuildConfig;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -10,6 +12,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     private static Retrofit retrofit;
 
+    public interface OnTokenExpiredListener {
+        void onTokenExpired();
+    }
+
+    private static OnTokenExpiredListener tokenExpiredListener;
+
+    public static void setOnTokenExpiredListener(OnTokenExpiredListener listener) {
+        tokenExpiredListener = listener;
+    }
     private ApiClient() {
     }
 
@@ -22,7 +33,17 @@ public class ApiClient {
                     .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                     .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                     .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                    .addInterceptor(logging)
+                    .addInterceptor(chain -> {
+                        Request request = chain.request();
+                        Response response = chain.proceed(request);
+
+                        if (response.code() == 401) {
+                            if (tokenExpiredListener != null) {
+                                tokenExpiredListener.onTokenExpired();
+                            }
+                        }
+                        return response;
+                    })
                     .build();
 
             retrofit = new Retrofit.Builder()

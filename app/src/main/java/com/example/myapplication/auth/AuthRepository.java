@@ -114,7 +114,7 @@ public class AuthRepository {
 
     private void handleLogoutResponse(Response<ApiResponse<Object>> response, AuthCallback<Object> callback) {
         ApiResponse<Object> body = response.body();
-        if (response.isSuccessful() && body != null && body.isSuccess()) {
+        if (response.isSuccessful() && body != null && body.isSuccess() || response.code() == 401) {
             sessionStore.clearSession();
             callback.onSuccess(body.getData());
             return;
