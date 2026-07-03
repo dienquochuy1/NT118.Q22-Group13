@@ -42,11 +42,6 @@ public class AuthRepository {
     }
 
     public void login(String email, String password, AuthCallback<AuthData> callback) {
-        if (MockConfig.isEnabled()) {
-            mockLogin(email, callback);
-            return;
-        }
-
         authApi.login(new LoginRequest(email, password))
                 .enqueue(new Callback<ApiResponse<AuthData>>() {
                     @Override
@@ -62,11 +57,6 @@ public class AuthRepository {
     }
 
     public void register(String username, String email, String password, AuthCallback<AuthData> callback) {
-        if (MockConfig.isEnabled()) {
-            mockRegister(username, email, callback);
-            return;
-        }
-
         authApi.register(new RegisterRequest(username, email, password))
                 .enqueue(new Callback<ApiResponse<AuthData>>() {
                     @Override
@@ -82,11 +72,6 @@ public class AuthRepository {
     }
 
     public void logout(AuthCallback<Object> callback) {
-        if (MockConfig.isEnabled()) {
-            mockLogout(callback);
-            return;
-        }
-
         String token = sessionStore.getAccessToken();
         String tokenType = sessionStore.getTokenType();
         String authorization = tokenType + " " + token;
@@ -172,60 +157,23 @@ public class AuthRepository {
         String safeMessage = message != null ? message : "Yeu cau that bai.";
         return new AuthErrorInfo(code, safeMessage, fieldErrors);
     }
+    public void loginWithGoogle(String idToken, AuthCallback<AuthData> callback) {
+        com.example.myapplication.data.auth.GoogleLoginRequest request =
+                new com.example.myapplication.data.auth.GoogleLoginRequest(idToken);
 
-    private void mockLogin(String email, AuthCallback<AuthData> callback) {
-        mainHandler.postDelayed(() -> {
-            if (email != null && email.contains("invalid")) {
-                callback.onError(new AuthErrorInfo("AUTH_INVALID_CREDENTIALS", "Invalid credentials.", null));
-                return;
-            }
-            AuthData data = MockDataFactory.createAuthData(email, "user");
-            sessionStore.saveSession(data);
-            callback.onSuccess(data);
-        }, 350);
-    }
+        authApi.loginWithGoogle(request)
+                .enqueue(new Callback<ApiResponse<AuthData>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<AuthData>> call, Response<ApiResponse<AuthData>> response) {
+                        // Tận dụng hàm handleAuthResponse có sẵn để tự động saveSession(Laravel Token)
+                        handleAuthResponse(response, callback, true);
+                    }
 
-    private void mockRegister(String username, String email, AuthCallback<AuthData> callback) {
-        mainHandler.postDelayed(() -> {
-            if (email != null && email.contains("taken")) {
-                callback.onError(new AuthErrorInfo("AUTH_EMAIL_TAKEN", "Email already exists.", null));
-                return;
-            }
-            if (username != null && username.contains("taken")) {
-                callback.onError(new AuthErrorInfo("AUTH_USERNAME_TAKEN", "Username already exists.", null));
-                return;
-            }
-            AuthData data = MockDataFactory.createAuthData(email, username);
-            sessionStore.saveSession(data);
-            callback.onSuccess(data);
-        }, 350);
-    }
-
-    private void mockLogout(AuthCallback<Object> callback) {
-        mainHandler.postDelayed(() -> {
-            sessionStore.clearSession();
-            callback.onSuccess(null);
-        }, 200);
-    }
-
-    private static class MockDataFactory {
-        private static AuthData createAuthData(String email, String username) {
-            com.example.myapplication.data.auth.UserDto user = new com.example.myapplication.data.auth.UserDto(
-                    "mock-user-1",
-                    username != null ? username : "Nguoi dung",
-                    username != null ? username : "user",
-                    email != null ? email : "user@example.com",
-                    "user"
-            );
-
-            return new AuthData(
-                    "mock_access_token",
-                    "Bearer",
-                    3600L,
-                    "mock_refresh_token",
-                    user
-            );
-        }
+                    @Override
+                    public void onFailure(Call<ApiResponse<AuthData>> call, Throwable t) {
+                        callback.onError(new AuthErrorInfo("NETWORK_ERROR", t.getMessage(), null));
+                    }
+                });
     }
 }
 

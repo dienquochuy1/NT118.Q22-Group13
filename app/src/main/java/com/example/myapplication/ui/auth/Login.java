@@ -53,6 +53,7 @@ public class Login extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() != android.app.Activity.RESULT_OK || result.getData() == null) {
+                        android.util.Log.e("TechByte_Result_Debug", "Luồng bị hủy hoặc dữ liệu trả về bị Null!");
                         return;
                     }
 
@@ -63,7 +64,7 @@ public class Login extends Fragment {
                             Toast.makeText(getActivity(), "Khong lay duoc thong tin Google.", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        firebaseAuthWithGoogle(account);
+                        sendGoogleTokenToBackend(account.getIdToken());
                     } catch (ApiException e) {
                         Toast.makeText(getActivity(), "Dang nhap Google that bai: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -142,45 +143,28 @@ public class Login extends Fragment {
         googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = authResult.getUser();
-                    if (user == null) {
-                        Toast.makeText(getActivity(), "Dang nhap Google that bai.", Toast.LENGTH_SHORT).show();
-                        return;
+    private void sendGoogleTokenToBackend(String googleIdToken) {
+        authRepository.loginWithGoogle(googleIdToken, new AuthCallback<AuthData>() {
+            @Override
+            public void onSuccess(AuthData data) {
+                if (data != null && data.getUser() != null) {
+                    String uid = data.getUser().getId();
+                    String username = data.getUser().getUsername();
+                    if (username == null || username.isEmpty()) {
+                        username = data.getUser().getName() != null
+                                ? data.getUser().getName()
+                                : data.getUser().getEmail();
                     }
+                    // Đồng bộ SharedPreferences và điều hướng về Home
+                    completeLogin(uid, username);
+                }
+            }
 
-                    user.getIdToken(false)
-                            .addOnSuccessListener(tokenResult -> {
-                                String idToken = tokenResult.getToken();
-                                if (TextUtils.isEmpty(idToken)) {
-                                    Toast.makeText(getActivity(), "Khong lay duoc token Firebase.", Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-
-                                authRepository.getSessionStore().saveSession(GoogleLoginProfile.toAuthData(
-                                        user.getUid(),
-                                        user.getDisplayName(),
-                                        user.getEmail(),
-                                        idToken
-                                ));
-
-                                String username = GoogleLoginProfile.resolveUsername(user.getDisplayName(), user.getEmail());
-                                completeLogin(user.getUid(), username);
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(
-                                    getActivity(),
-                                    "Khong lay duoc token Firebase: " + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show());
-                })
-                .addOnFailureListener(e -> Toast.makeText(
-                        getActivity(),
-                        "Dang nhap Google that bai: " + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show());
+            @Override
+            public void onError(AuthErrorInfo error) {
+                Toast.makeText(getActivity(), "Lỗi đồng bộ hệ thống: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void loginUser() {
@@ -210,11 +194,13 @@ public class Login extends Fragment {
 
             @Override
             public void onError(AuthErrorInfo error) {
-                String message = error != null && error.getMessage() != null ? error.getMessage() : "Đăng nhập thất bại";
-                if (error != null && error.getFieldErrors() != null && !error.getFieldErrors().isEmpty()) {
-                    message = error.getFieldErrors().get(0);
-                }
-                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+//                String message = error != null && error.getMessage() != null ? error.getMessage() : "Đăng nhập thất bại";
+//                if (error != null && error.getFieldErrors() != null && !error.getFieldErrors().isEmpty()) {
+//                    message = error.getFieldErrors().get(0);
+//                }
+//                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                android.util.Log.e("TechByte_Auth", "Lỗi mạng: " + error.getMessage());
+                Toast.makeText(getActivity(), "Lỗi đồng bộ hệ thống: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
